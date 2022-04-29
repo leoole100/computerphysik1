@@ -58,7 +58,7 @@ Programm mit allen Optionen kann in nur einer Zeile gestartet werden. -> oft sch
 
 Komplexe Aufgaben lassen sich etwa durch das Verketten ("pipe") von Befehlen, oder durch Skripte ausführen. Skripte können ganze Programme ersetzen.
 
-Paketverwaltungen erlauben das Installieren oder updaten vieler Programme in nur einer Zeile.
+Paketverwaltungen erlauben das Installieren oder Updaten vieler Programme in nur einer Zeile.
 
 Wenn mal nichts mehr funktioniert (z.B. Grafiktreiber kaputt) ist immernoch die Shell da.
 
