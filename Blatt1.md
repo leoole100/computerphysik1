@@ -103,6 +103,8 @@ Insbesondere lohnt sich `[Befehl] | grep [Suchwort]`, um aus dem Output von [Bef
 
 Drückt man bei halbfertiger Eingabe ´[TAB]`, so schlägt die Shell Vervollständigungen vor, sogar kontextgebunden. Kann etwa Befehle, Befehlsoptionen, aber auch Dateinamen ergänzen.
 
+`[Strg + C]` bricht den laufenden Befehl ab.
+
 `exit` schließt Terminal
 
 
@@ -152,5 +154,27 @@ Gefolgt wird das ganze von einer Tabelle die die aktuell laufenden Prozesse aufl
 und mehr... Die manpage hat über 2000 Zeilen.
 
 
-### f)
+### f) Kopieren von Dateien zwischen Rechnern
 
+Funktioniert über eine ssh-Verbindung. Diese muss zuerst bestehen, dann kann man einfach mit `scp` deine Datei von `[user1@host1]` zu `[user2@host2]` sicher kopieren. Probiert haben wir es aber nicht...
+
+
+### g) X-Option des ssh-Befehls
+
+Laut `man ssh`: `-X Enables X11 forwarding.` (Vorsicht: das "X" muss groß geschrieben sein, sonst wird die Option deaktiviert). Das bedeutet, der remote client kann auf den lokalen X-Server zugreifen, und so die grafische Oberfläche sehen. So kann man zum Beispiel grafisch an einem remote-PC arbeiten, zum Beispiel an einem Server, der keine eigene Grafikausgabe besitzt.
+
+
+### (*) Dateirechte
+
+Dateizugriffsrechte werden in drei Kategorien geregelt: Der superuser kann in der Regel alle Dateien lesen und auch ändern. Der Owner einer Datei ebenfalls. Schließĺich gibt es noch eigene Zugriffsrechte für dritte, die meist keine Änderungen an Dateien vornehmen dürfen.
+
+Schließlich ist noch geregelt, welche Dateien von wem ausgeführt werden dürfen.
+
+Ändern lassen sich die Optionen mit `chmod`
+
+
+### (*)
+
+`df` listet die Speicherauslastung von Laufwerken. Ohne Argumente liefert der Befehl eine Liste von Dateisystemen mit der Anzahl der gesamten, verwendeten und verfügbaren Speicherblöcke, die prozentuale Belegung und den Ort, an dem das jeweilige System eingebunden ist.
+
+`du` Gibt die ungefäre Speicherbelegung aller Dateien im aktuellen Verzeichnis aus. Vorsicht: Ausgabe kann lang werden...
