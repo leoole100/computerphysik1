@@ -117,7 +117,7 @@ Drückt man bei halbfertiger Eingabe ´[TAB]`, so schlägt die Shell Vervollstä
 `ls | sort > test.txt` Ruft `ls` auf, ruft anschließend `sort` mit der Ausgabe des ersten Befehls auf, und gibt die Ausgabe des `sort`-Befehls schließlich in die Datei `test.txt`
 
 
-### c)
+### c) Befehle `wc` und `file`
 
 Der Befehl `wc` gibt die Anzahl der Wörter, Bytes und Zeilensprünge einer Datei aus.
 
