@@ -1,5 +1,7 @@
 # Blatt 1
 
+Leon Oleschko, Aurel Müller-Schoenau
+
 ## Aufgabe 1
 
 ### a) uns bekannte Betriebssysteme
