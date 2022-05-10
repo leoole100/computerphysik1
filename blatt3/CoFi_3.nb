@@ -1,0 +1,12 @@
+In[37]:=
+SetDirectory[NotebookDirectory[]];
+d=Import/@FileNames["A_*.dat"];
+
+ListLinePlot[d[[All,All,{1,4}]],AxesLabel->{"t","E"},PlotLegends->Placed[FileNames["A_*.dat"],Below]]
+Export["A_Energie.png",%];
+Out[40]= 
+A_ExplizitesEulerCauchyVerfahren.dat	A_LeapFrog.dat
+A_RungeKuttaZweiterOrdnung.dat
+
+
+
