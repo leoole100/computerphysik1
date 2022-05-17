@@ -29,6 +29,7 @@ int main(){
 		E = (M*v*v + D*x*x)/2;
 
 		printf("%g %g %g %g\n", t, x, v, E);
+		
 
 	}
 
