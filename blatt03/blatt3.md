@@ -3,13 +3,13 @@
 von *Aurel Müller-Schönau* und *Leon Oleschko*
 
 ## a)
-Um die Fehlerabhängigkeit von verschiedenen numerischen Methoden zu prüfen, wurde ein harmonischer Oszillator (Periodendauer $T$) für $1000$ Oszillationen mit verschiedenen Zeitlichen Auflösungen $H$ simuliert. Dabei ist $H\in[0.001;0.001;0.5]/2\pi T$. 
+Um die Fehlerabhängigkeit von verschiedenen numerischen Methoden zu prüfen, wurde ein harmonischer Oszillator (Periodendauer $T$) für $500$ Oszillationen mit verschiedenen Zeitlichen Auflösungen $H$ simuliert. Dabei ist $H\in[0.001;0.001;0.5]/2\pi T$. 
 Dies ist zwar unrealistisch hoch, lässt aber eine schnelle Simulation zu.
 
 In der Abbildung unten sind der Auslenkungsfehler $x$, der Geschwindigkeitsfehler $v$ und der Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
 ![Error vs H](A_plot.png)
 
-Die Erkenntnis, dass die Energie nur beim Runge Kutta Verfahren erhalten ist (zumindest praktisch) ist trotzdem gute zu erkennen.
+Die Erkenntnis, dass die Energie nur beim Leap Frog und Verlet Verfahren erhalten ist (zumindest praktisch) ist trotzdem gute zu erkennen.
 
 ## b)
 
