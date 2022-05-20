@@ -17,25 +17,59 @@
 
 \section*{a) Fehlerabhängigkeit}
 Um die Fehlerabhängigkeit von verschiedenen numerischen Methoden zu prüfen, wurde ein harmonischer Oszillator (Periodendauer $T$) für $500$ Oszillationen mit verschiedenen Zeitlichen Auflösungen $H$ simuliert. Dabei ist $H\in[0.001;0.001;0.5]/2\pi T$. 
-Dies ist zwar unrealistisch hoch, lässt aber eine schnelle Simulation zu.
+Dies ist zwar unrealistisch hoch, lässt dafür aber eine schnelle Simulation zu.
 
-In der Abbildung \ref{fig:fehler} sind der Auslenkungsfehler $x$, der Geschwindigkeitsfehler $v$ und der Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
+In der Abbildung \ref{fig:fehler} sind der relative Auslenkungsfehler $x$, der Geschwindigkeitsfehler $v$ und Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
 
-Die Erkenntnis, dass die Energie nur beim Leap Frog und Verlet Verfahren erhalten ist (zumindest praktisch) ist trotzdem gute zu erkennen.
+Dass die Energie nur beim Leap-Frog- und Verlet-Verfahren erhalten ist (zumindest beinahe) ist trotzdem gut zu erkennen.
+Diese beiden liefern auch nahezu dieselben Ergebnisse, was nicht verwunderlich ist, da beide symmetrische Zweischrittverfahren sind. Die Energie ist erhalten, weil die Schwingung des harmonischen Oszillators unter Zeitumkehr invariant ist, somit ist die Symmetrie der Verfahren hinreichend für Energieerhaltung.
 
-\begin{wrapfigure}{L}{200pt}
-	\centering
-	\includegraphics[width=\linewidth]{B_Phase.pdf}
-	\caption{Phasendiagram für verschiedene Dämpfungen $\gamma$}
-	\label{fig:phase}
-\end{wrapfigure}
+Für kleine Schrittweiten ist das Runge-Kutta-Verfahren beinahe genau so gut wie die symmetrischen Verfahren. Für komplexere Systeme sollte es sogar bessere Ergebnisse liefern aufgrund höherer Konsistenzordnung, jedoch haben die symmetrischen Verfahren in diesem Fall einen systematischen Vorteil.
+
+Das explizite Euler-Cauchy-Verfahren schneidet als nicht symmetrisches Einschrittverfahren am schlechtesten ab. Der "Energiegewinn" ist dadurch zu erklären, dass das Verfahren prinzipbedingt in den Bereichen, in denen die exakte Lösung eine Krümmung besitzt quasi zu weit ausschwenkt, deshalb wird die Schwingungsamplitude immer größer und die Energie wächst immer weiter an.
+
 
 \section*{b) Phasendiagram}
-In Abbildung \ref{fig:phase} ist das Phasendiagramm für verschiedene Dämpfungen $\gamma$ dargestellt. Simuliert mit dem Verlet Verfahren.
-
-
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=400pt]{B_Phase.pdf}
+	\caption{Phasendiagram für verschiedene Dämpfungen $\gamma$}
+	\label{fig:phase}
+\end{figure}
+In Abbildung \ref{fig:phase} ist das Phasendiagramm für verschiedene Dämpfungen $\gamma$ dargestellt.\\
+Die Ortskoordinate $x$ ist mit dem Verlet Verfahren simuliert und die Geschwindigkeit $v$ wird mir der numerischen rechts Ableitung bestimmt.
 
 \section*{c,d,e) Angetriebener Oszillator}
-\blindtext
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=290pt]{C_Seite.pdf}
+	\caption{Resonanzkurve für 6 verschiedene Dämpfungen $\gamma$}
+	\label{fig:seite}
+\end{figure}
+
+\paragraph*{c)} In der Abbildung \ref{fig:seite} ist die Resonanzkurve eines harmonischen Oszillators mit Eingenfrequenz $\omega_E$, mit einer Antreibenden Frequenz $\omega_t$ und einer Amplitude der Antreibenden Kraft von $1$ für 6 verschiedene Dämpfungen $\gamma$  dargestellt.\\ 
+Dabei wird der Ort mit dem Verlet Verfahren simuliert und die Geschwindigkeit wird mit der numerischen rechts Ableitung bestimmt.
+Nach einer Einschwingzeit von $\SI{180}{\radian}\;\omega_E^{-1}$ wird die Amplitude bestimmt, indem das Maximum gespeichert wird, bis nach weitere $\SI{120}{\radian}\;\omega_E^{-1}$ das Maximum ausgelesen wird. 
+
+\smallskip
+
+\begin{figure}[p]
+	\centering
+	\includegraphics[width=450pt]{C_Plot.pdf}
+	\caption{2D Resonanzkurve für verschiedene Dämpfungen $\gamma$ mit Phasenverschiebung zur antreibenden Schwingung in \si{\radian}.}
+	\label{fig:plot}
+\end{figure}
+\paragraph*{e)} Indem an dem Maximumszeitpunkt die Phase der antreibenden Schwingung $\omega_T \cdot t \mod 2\pi$ gespeichert wird, kann auch die Phasenverschiebung zwischen der antreibenden und resultierenden Schwingung bestimmt werden.
+Diese ist in $rad$ in der Abbildung \ref{fig:plot} dargestellt.
+Dabei ist schön der Phasensprung von $\pi$ bei der Resonanzkatastrophe bei schwacher Dämpfung zu sehen.
+
+\begin{figure}[p]
+	\centering
+	\includegraphics[width=400pt]{C_3D.pdf}
+	\caption{3D Darstellung der Resonanzkurve für verschiedene Dämpfungen $\gamma$}
+	\label{fig:3d}
+\end{figure}
+\paragraph*{d)}
+In Abbildung \ref{fig:3d} ist das Phasendiagramme für verschiedene Dämpfungen $\gamma$ als 3 dimensionale Oberfläche dargestellt.
 
 \end{document}
