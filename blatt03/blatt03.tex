@@ -21,12 +21,12 @@ Dies ist zwar unrealistisch hoch, lässt dafür aber eine schnelle Simulation zu
 
 In der Abbildung \ref{fig:fehler} sind der relative Auslenkungsfehler $x$, der Geschwindigkeitsfehler $v$ und Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
 
-Dass die Energie nur beim Leap-Frog- und Verlet-Verfahren erhalten ist (zumindest beinahe) ist trotzdem gut zu erkennen.
+Dass die Energie nur beim Leap-Frog- und Verlet-Verfahren erhalten ist (zumindest beinahe) ist trotzdem gut zu erkennen. (Implementation \ref{A_LeapFrog} und \ref{A_Verlet})\\
 Diese beiden liefern auch nahezu dieselben Ergebnisse, was nicht verwunderlich ist, da beide symmetrische Zweischrittverfahren sind. Die Energie ist erhalten, weil die Schwingung des harmonischen Oszillators unter Zeitumkehr invariant ist, somit ist die Symmetrie der Verfahren hinreichend für Energieerhaltung.
 
-Für kleine Schrittweiten ist das Runge-Kutta-Verfahren beinahe genau so gut wie die symmetrischen Verfahren. Für komplexere Systeme sollte es sogar bessere Ergebnisse liefern aufgrund höherer Konsistenzordnung, jedoch haben die symmetrischen Verfahren in diesem Fall einen systematischen Vorteil.
+Für kleine Schrittweiten ist das Runge-Kutta-Verfahren beinahe genau so gut wie die symmetrischen Verfahren. Für komplexere Systeme sollte es sogar bessere Ergebnisse liefern aufgrund höherer Konsistenzordnung, jedoch haben die symmetrischen Verfahren in diesem Fall einen systematischen Vorteil. (Implementation \ref{A_RK})
 
-Das explizite Euler-Cauchy-Verfahren schneidet als nicht symmetrisches Einschrittverfahren am schlechtesten ab. Der "Energiegewinn" ist dadurch zu erklären, dass das Verfahren prinzipbedingt in den Bereichen, in denen die exakte Lösung eine Krümmung besitzt quasi zu weit ausschwenkt, deshalb wird die Schwingungsamplitude immer größer und die Energie wächst immer weiter an.
+Das explizite Euler-Cauchy-Verfahren schneidet als nicht symmetrisches Einschrittverfahren am schlechtesten ab. Der \grqq{}Energiegewinn\grqq{} ist dadurch zu erklären, dass das Verfahren prinzipbedingt in den Bereichen, in denen die exakte Lösung eine Krümmung besitzt quasi zu weit ausschwenkt, deshalb wird die Schwingungsamplitude immer größer und die Energie wächst immer weiter an. (Implementation \ref{A_Euler})
 
 
 \section*{b) Phasendiagram}
@@ -37,7 +37,7 @@ Das explizite Euler-Cauchy-Verfahren schneidet als nicht symmetrisches Einschrit
 	\label{fig:phase}
 \end{figure}
 In Abbildung \ref{fig:phase} ist das Phasendiagramm für verschiedene Dämpfungen $\gamma$ dargestellt.\\
-Die Ortskoordinate $x$ ist mit dem Verlet Verfahren simuliert und die Geschwindigkeit $v$ wird mir der numerischen rechts Ableitung bestimmt.
+Die Ortskoordinate $x$ ist mit dem Verlet Verfahren in Listing \ref{B} simuliert und die Geschwindigkeit $v$ wird mir der numerischen rechts Ableitung bestimmt.
 
 \section*{c,d,e) Angetriebener Oszillator}
 \begin{figure}[t]
@@ -48,7 +48,7 @@ Die Ortskoordinate $x$ ist mit dem Verlet Verfahren simuliert und die Geschwindi
 \end{figure}
 
 \paragraph*{c)} In der Abbildung \ref{fig:seite} ist die Resonanzkurve eines harmonischen Oszillators mit Eingenfrequenz $\omega_E$, mit einer Antreibenden Frequenz $\omega_t$ und einer Amplitude der Antreibenden Kraft von $1$ für 6 verschiedene Dämpfungen $\gamma$  dargestellt.\\ 
-Dabei wird der Ort mit dem Verlet Verfahren simuliert und die Geschwindigkeit wird mit der numerischen rechts Ableitung bestimmt.
+Dabei wird der Ort mit dem Verlet Verfahren (Listing \ref{C}) simuliert und die Geschwindigkeit wird mit der numerischen rechts Ableitung bestimmt.
 Nach einer Einschwingzeit von $\SI{180}{\radian}\;\omega_E^{-1}$ wird die Amplitude bestimmt, indem das Maximum gespeichert wird, bis nach weitere $\SI{120}{\radian}\;\omega_E^{-1}$ das Maximum ausgelesen wird. 
 
 \smallskip
@@ -71,5 +71,25 @@ Dabei ist schön der Phasensprung von $\pi$ bei der Resonanzkatastrophe bei schw
 \end{figure}
 \paragraph*{d)}
 In Abbildung \ref{fig:3d} ist das Phasendiagramme für verschiedene Dämpfungen $\gamma$ als 3 dimensionale Oberfläche dargestellt.
+
+\clearpage
+\section*{Appendix - Code}
+\subsection*{a)}
+\lstinputlisting[label={A_Euler},caption={Simulation für die a) mit dem Euler Verfahren für verschiedene Schrittweiten},language=c]{A_ExplizitesEulerCauchyVerfahren.c}
+
+\lstinputlisting[label={A_LeapFrog},caption={Simulation für die a) mit dem Leap Frog Verfahren für verschiedene Schrittweiten},language=c]{A_LeapFrog.c}
+
+\lstinputlisting[label={A_RK},caption={Simulation für die a) mit dem Runge Kutta Verfahren 2. Ordnung für verschiedene Schrittweiten},language=c]{A_RungeKuttaZweiterOrdnung.c}
+
+\lstinputlisting[label={A_Verlet},caption={Simulation für die a) mit dem Verlet Verfahren für verschiedene Schrittweiten},language=c]{A_Verlet.c}
+
+\clearpage
+\subsection*{b)}
+\lstinputlisting[label={B},caption={Simulation für die b) mit dem Verlet Verfahren und Dämpfung. Für verschiedene Dämpfungen wurde neu Kompaliert.},language=c]{B_Mehrschrittverfahren.c}
+
+\clearpage
+\subsection*{c,d,e)}
+\lstinputlisting[label={C},caption={Simulation für die c,d,e) mit dem Verlet Verfahren für verschiedene Dämpfungen und Anregungsfrequenzen},language=c]{C_Erzwungen.c}
+
 
 \end{document}

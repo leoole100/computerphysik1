@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-// damping constant 
+// damping constant (changed for different damping factors)
 #define GAMMA 0.3
 
 int main(){
