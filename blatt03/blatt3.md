@@ -1,15 +1,20 @@
 # Computerphysik I: Blatt 03
 
-von *Aurel Müller-Schönau* und *Leon Oleschko*
+von *Aurel Müller-Schoenau* und *Leon Oleschko*
 
 ## a)
 Um die Fehlerabhängigkeit von verschiedenen numerischen Methoden zu prüfen, wurde ein harmonischer Oszillator (Periodendauer $T$) für $500$ Oszillationen mit verschiedenen Zeitlichen Auflösungen $H$ simuliert. Dabei ist $H\in[0.001;0.001;0.5]/2\pi T$. 
 Dies ist zwar unrealistisch hoch, lässt aber eine schnelle Simulation zu.
 
-In der Abbildung unten sind der Auslenkungsfehler $x$, der Geschwindigkeitsfehler $v$ und der Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
+In der Abbildung unten sind der relative Auslenkungsfehler $x$, Geschwindigkeitsfehler $v$ und Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
 ![Error vs H](A_plot.png)
 
-Die Erkenntnis, dass die Energie nur beim Leap Frog und Verlet Verfahren erhalten ist (zumindest praktisch) ist trotzdem gute zu erkennen.
+Dass die Energie nur beim Leap-Frog- und Verlet-Verfahren erhalten ist (zumindest beinahe) ist trotzdem gut zu erkennen.
+Diese beiden liefern auch nahezu dieselben Ergebnisse, was nicht verwunderlich ist, da beide symmetrische Zweischrittverfahren sind. Die Energie ist erhalten, weil die Schwingung des harmonischen Oszillators unter Zeitumkehr invariant ist, somit ist die Symmetrie der Verfahren hinreichend für Energieerhaltung.
+
+Für kleine Schrittweiten ist das Runge-Kutta-Verfahren beinahe genau so gut wie die symmetrischen Verfahren. Für komplexere Systeme sollte es sogar bessere Ergebnisse liefern aufgrund höherer Konsistenzordnung, jedoch haben die symmetrischen Verfahren in diesem Fall einen systematischen Vorteil.
+
+Das explizite Euler-Cauchy-Verfahren schneidet als nicht symmetrisches Einschrittverfahren am schlechtesten ab. Der "Energiegewinn" ist dadurch zu erklären, dass das Verfahren prinzipbedingt in den Bereichen, in denen die exakte Lösung eine Krümmung besitzt quasi zu weit ausschwenkt, deshalb wird die Schwingungsamplitude immer größer und die Energie wächst immer weiter an.
 
 ## b)
 
