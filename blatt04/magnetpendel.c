@@ -13,7 +13,8 @@
 
 // parameters for the plot
 #define PW 3.5 // plot width
-#define PP 300 // plot points
+#define PP 600 // plot points
+
 
 
 double rMag[NMag][3]; // X- und Y-Koordinaten und Magnetstärke
