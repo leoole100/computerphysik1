@@ -20,3 +20,5 @@ a.out
 .kate-swp
 .run.xml
 .bcf
+
+*.dat
