@@ -13,7 +13,7 @@
 
 // parameters for the plot
 #define PW 3.5 // plot width
-#define PP 30 // plot points
+#define PP 600 // plot points
 
 
 
