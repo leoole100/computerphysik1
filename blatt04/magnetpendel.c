@@ -10,7 +10,7 @@
 
 // parameters for the plot
 #define PW 2.0 // half of plot with
-#define PP 50 // plot points
+#define PP 100 // plot points
 
 
 

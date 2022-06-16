@@ -1,3 +1,3 @@
 magnetpendel: magnetpendel.c
-	gcc $< -lm 
+	gcc -O3 $< -lm 
 	./a.out
