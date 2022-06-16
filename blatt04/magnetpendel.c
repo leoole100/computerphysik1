@@ -9,7 +9,7 @@
 #define h 0.1 // Höhe des Pendels
 
 // parameters for the plot
-#define PW 2.0 // half of plot with
+#define PW 3.0 // plot width
 #define PP 100 // plot points
 
 
@@ -29,7 +29,7 @@ int main(){
 
         rMag[i][0] = cos(temp);
         rMag[i][1] = sin(temp);
-        rMag[i][2] = 1.;
+        rMag[i][2] = 1;
 
         fprintf(file, "%g %g\n", rMag[i][0], rMag[i][1]); // plot "magnetpendel.dat" using 2:3 w l, "magnete.dat" lw 5
         //printf("x: %g \t\t y: %g \t\t Stärke: %g \n", rmag[i][0], rmag[i][1], rmag[i][2]);
