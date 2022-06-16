@@ -73,9 +73,7 @@ int main(){
                 
 				// add the force due to gravity
                 kraft[0] += - K * r[0] - GAMMA * v[0];
-                kraft[1] += - K * r[1] - GAMMA * v[1];
-                
-                
+                kraft[1] += - K * r[1] - GAMMA * v[1];                
                 
                 // Leap Frog step
                 v[0] += H * kraft[0];
@@ -83,7 +81,7 @@ int main(){
                 r[0] += H * v[0];
                 r[1] += H * v[1];
                 
-                
+                // check for stagnation
                 if(fabs(v[0]) < vmin)
                     if(fabs(v[1]) < vmin)
                         if(fabs(kraft[0]) < kmin)
@@ -97,6 +95,7 @@ int main(){
                 
             }
             
+			// print for debugging
             //printf("v0: %g    v1: %g    k0: %g    k1: %g\n", fabs(v[0]), fabs(v[1]), fabs(kraft[0]), fabs(kraft[1]));
             
 			// find the closest magnet
@@ -114,7 +113,7 @@ int main(){
                 }
             }
             
-			
+			// print to file
             fprintf(file, "%g %g %d %g\n", x, y, maxi+1, sqrt(temp) );
 
         }// end of y scan
