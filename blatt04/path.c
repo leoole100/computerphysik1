@@ -4,9 +4,9 @@
 #define NMag 3 // Number of magnet
 #define Nmax 20000 // Maximal number of simulation steps
 #define H 0.001
-#define GAMMA 0.1
+#define GAMMA 0.2
 #define K 1. // Schwerkraftstärke
-#define h 0.1 // Höhe des Pendels
+#define h 0.25 // Höhe des Pendels
 
 // parameters for the plot
 const double start[2] = {1.5, 1.5};
@@ -75,8 +75,8 @@ int main(){
                 kraft[0] += - K * r[0] - GAMMA * v[0];
                 kraft[1] += - K * r[1] - GAMMA * v[1];
 
-				E -= 1/2 * K * (r[0]*r[0] + r[1]*r[1]);
-                E += 1/2 * (v[0]*v[0] + v[1]*v[1]);
+				E += 1/2 * K * (r[0]*r[0] + r[1]*r[1]);
+                //E += 1/2 * (v[0]*v[0] + v[1]*v[1]);
 
                 // Leap Frog step
                 v[0] += H * kraft[0];
@@ -85,7 +85,7 @@ int main(){
                 r[1] += H * v[1];
                 
 				// print path
-				fprintf(file, "%g %g %g %g %g \n", t, r[0], r[1], E, Emag);   
+				fprintf(file, "%g %g %g %g %g %g \n", t, r[0], r[1], E, Emag, E-Emag);   
 			}
         }// end of y scan
         fprintf(file, "\n");

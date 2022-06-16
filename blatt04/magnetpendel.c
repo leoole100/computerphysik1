@@ -2,15 +2,15 @@
 #include <math.h>
 
 #define NMag 3 // Number of magnet
-#define Nmax 1000 // Maximal number of simulation steps
-#define H 0.01
-#define GAMMA 0.1
+#define Nmax 10000 // Maximal number of simulation steps
+#define H 0.005
+#define GAMMA 0.2
 #define K 1. // Schwerkraftstärke
-#define h 0.1 // Höhe des Pendels
+#define h 0.25 // Höhe des Pendels
 
 // parameters for the plot
-#define PW 3.0 // plot width
-#define PP 100 // plot points
+#define PW 3.5 // plot width
+#define PP 300 // plot points
 
 
 
