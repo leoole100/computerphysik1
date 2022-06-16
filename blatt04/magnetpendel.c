@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 #define NMag 3 // Number of magnet
 #define Nmax 10000 // Maximal number of simulation steps
@@ -7,10 +8,12 @@
 #define GAMMA 0.2
 #define K 1. // Schwerkraftstärke
 #define h 0.25 // Höhe des Pendels
+#define kmin 0.5
+#define vmin 0.5
 
 // parameters for the plot
 #define PW 3.5 // plot width
-#define PP 300 // plot points
+#define PP 30 // plot points
 
 
 
@@ -72,16 +75,29 @@ int main(){
                 kraft[0] += - K * r[0] - GAMMA * v[0];
                 kraft[1] += - K * r[1] - GAMMA * v[1];
                 
+                
+                
                 // Leap Frog step
                 v[0] += H * kraft[0];
                 v[1] += H * kraft[1];
                 r[0] += H * v[0];
                 r[1] += H * v[1];
                 
+                
+                if(fabs(v[0]) < vmin)
+                    if(fabs(v[1]) < vmin)
+                        if(fabs(kraft[0]) < kmin)
+                            if(fabs(kraft[1]) < kmin)
+                                break; // Simulation abbrechen, wenn sich nichts mehr ändert
+                
+                
+                
 				// print path for debugging
                 //printf("%g %g %g\n", t, r[0], r[1]);
                 
             }
+            
+            //printf("v0: %g    v1: %g    k0: %g    k1: %g\n", fabs(v[0]), fabs(v[1]), fabs(kraft[0]), fabs(kraft[1]));
             
 			// find the closest magnet
             double temp = 1e5; // closest distance to magnet 
