@@ -1,31 +1,4 @@
 
-Skip to content
-Pull requests
-Issues
-Marketplace
-Explore
-@frittierter1keks
-leoole100 /
-computerphysik1
-Private
-
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-
-    Insights
-
-computerphysik1/blatt03/blatt03.tex
-@leoole100
-leoole100 abgabe?
-Latest commit c15c55c 28 days ago
-History
-1 contributor
-95 lines (70 sloc) 5.46 KB
 \input{"../header.tex"}
 
 
@@ -35,105 +8,76 @@ History
 \author{Aurel Müller-Schönau und Leon Oleschko}
 \maketitle
 
-\begin{figure*}[h!]
-	\centering
-	\includegraphics[width=\linewidth]{A_plot.pdf}
-	\caption{Fehler in Abhängigkeit von der Schrittweite $H$}
-	\label{fig:fehler}
-\end{figure*}
 
+\section*{a) Magnetpendel - Erste Schritte}
+Es soll ein Magnetpendel simuliert werden. Wir nehmen an, dass die Auslenkung klein ist, und beschränken uns auf die $x$-$y$-Ebene. Die auf die Stahlkugel wirkende magnetische Kraft soll von drei Magneten ausgehen und die form
 
-\section*{a) Fehlerabhängigkeit}
-Um die Fehlerabhängigkeit von verschiedenen numerischen Methoden zu prüfen, wurde ein harmonischer Oszillator (Periodendauer $T$) für $500$ Oszillationen mit verschiedenen Zeitlichen Auflösungen $H$ simuliert. Dabei ist $H\in[0.001;0.001;0.5]/2\pi T$. 
-Dies ist zwar unrealistisch hoch, lässt dafür aber eine schnelle Simulation zu.
+\begin{align}
+\vec{F}_m = \sum_{i=1}^N S_i \cdot \frac{\vec{r} - \vec{r}_i}{|r - r_i|^3}
+\end{align}
 
-In der Abbildung \ref{fig:fehler} sind der relative Auslenkungsfehler $x$, der Geschwindigkeitsfehler $v$ und Energiefehler $E$ für verschiedene Zeitauflösungen $H$ dargestellt.
+Die individuelle Magnetstärke $S_i$ haben wir dabei selbst eingeführt, um das Programm für verschieden starke Magnete testen zu können. Sie wird aber im folgenden für alle Magnete $1$ betragen. $N$ ist die Anzahl der Magnete, $\vec{r}_i$ bezeichnet deren Position. Dabei haben wir uns im Programm bereits auf die $x$-$y$-Ebene beschränkt. Im Nenner kommt natürlich weiterhin auch die $z$-Komponente vor! Wie das praktisch aussieht, ist im Code im Anhang \ref{E_Pfad} zu sehen. Das Programm zeichnet den Pfad des Pendels für verschiedene Anfangspunkte, siehe dazu e). Im Programm werden die Koordinaten der Magneten in einem Array gespeichert, wobei die dritte Koordinate in wirklichkeit der Magnetstärke entspricht. Das Pendel befindet sich immer in der Höhe $h$ über der Magnetebene.\\
+Zusätzlich soll eine Schwerkraft 
 
-Dass die Energie nur beim Leap-Frog- und Verlet-Verfahren erhalten ist (zumindest beinahe) ist trotzdem gut zu erkennen. (Implementation \ref{A_LeapFrog} und \ref{A_Verlet})\\
-Diese beiden liefern auch nahezu dieselben Ergebnisse, was nicht verwunderlich ist, da beide symmetrische Zweischrittverfahren sind. Die Energie ist erhalten, weil die Schwingung des harmonischen Oszillators unter Zeitumkehr invariant ist, somit ist die Symmetrie der Verfahren hinreichend für Energieerhaltung.
+\begin{align}
+\vec{F}_f = -k \vec{r}
+\end{align}
+\\
+wirken, wobei wir $k=1$ wählen. Weiterhin soll eine Reibungskraft
 
-Für kleine Schrittweiten ist das Runge-Kutta-Verfahren beinahe genau so gut wie die symmetrischen Verfahren. Für komplexere Systeme sollte es sogar bessere Ergebnisse liefern aufgrund höherer Konsistenzordnung, jedoch haben die symmetrischen Verfahren in diesem Fall einen systematischen Vorteil. (Implementation \ref{A_RK})
+\begin{align}
+\vec{F}_r = -\gamma \dot{\vec{r}}
+\end{align}
+\\
+das Pendel letztendlich zum Stillstand bringen.
 
-Das explizite Euler-Cauchy-Verfahren schneidet als nicht symmetrisches Einschrittverfahren am schlechtesten ab. Der \grqq{}Energiegewinn\grqq{} ist dadurch zu erklären, dass das Verfahren prinzipbedingt in den Bereichen, in denen die exakte Lösung eine Krümmung besitzt quasi zu weit ausschwenkt, deshalb wird die Schwingungsamplitude immer größer und die Energie wächst immer weiter an. (Implementation \ref{A_Euler})
+\section*{b)}
+Die Magnete wurden in einem regelmäßigen Dreieck im Abstand $1$ um den Ursprung angeordnet. Die Koordinaten betragen also $\left(\cos(\alpha), \sin(\alpha)\right)$ für $\alpha \in \{0, \frac{2\pi}{3}, \frac{4\pi}{3}\}$. Der Schwerpunkt liegt dann im Ursprung.
 
+\section*{c)}
+Die Simulation wurde im \textit{Leap-Frog-Verfahren} implementiert. Die Bewegungsgleichungen lauten dann
 
-\section*{b) Phasendiagram}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=400pt]{B_Phase.pdf}
-	\caption{Phasendiagram für verschiedene Dämpfungen $\gamma$}
-	\label{fig:phase}
-\end{figure}
-In Abbildung \ref{fig:phase} ist das Phasendiagramm für verschiedene Dämpfungen $\gamma$ dargestellt.\\
-Die Ortskoordinate $x$ ist mit dem Verlet Verfahren in Listing \ref{B} simuliert und die Geschwindigkeit $v$ wird mir der numerischen rechts Ableitung bestimmt.
+\begin{align}
+&\vec{v}_{n+1} &= &\vec{v}_n &+ &H &\cdot &\vec{F}_{gesamt} / m \\\\
+&\vec{r}_{n+1} &= &\vec{r}_n &+ &H &\cdot &\vec{v}_{n+1}
+\end{align}
+\\
+Dabei wurde für die Beschleunigung $m=1$ gewählt. Im Programm \ref{E_Pfad} taucht $m$ deshalb gar nicht auf.
 
-\section*{c,d,e) Angetriebener Oszillator}
+\section*{d)}
+Bevor die eigentliche Simulation beginnen konnte, wurde das Programm zunächst mit verschiedenen Anfangswerten getestet. So musste etwa ein Bug gefixt werden, bei dem das Pendel immer am Nullpunkt zum stehen kam. Es stellte sich heraus, dass das Pendel zu hoch über der Magnetebene war, und die magnetische Kraft somit klein gegenüber der Schwerkraft war. Schließĺich konnte der Code auf zwei verschiedene Arten verwendet werden:
+
+\section{e)}
+Im Programm \ref{E_Path} befindet sich das Pendel in einer Höhe von $h=0.25$ Einheiten über der Magnetebene. Die Schwerkraftkonstante $K$ beträgt $1$, für die Dämpfung wurde $\gamma = 0.2$ gewählt. Dann wurden die Pfade dreier nahe beienanderliegender Startpunkte (keine Anfangsgeschwindigkeit) gezeichnet. Dies soll einen ersten Hinweis auf das chaotische Verhalten liefern. Die Anfangspunkte unterscheiden sich lediglich in der $x$-Koordinate um einen kleinen Wert $\pm \varepsilon$ mit $\varepsilon = 0.02$.\\
+Das Ergebnis ist als Schaubild im Diagramm \label{fig:xy} dargestellt. Gezeichnet wurden die $x$-$y$-Diagramme der drei verschiedenen Startpunkte. Es ist zu erkennen, dass sich trotz anfänglich fast identischer Pfade die Pendelbewegung mit fortschreitender Zeit deutlich anders entwickelt.
+
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=290pt]{C_Seite.pdf}
-	\caption{Resonanzkurve für 6 verschiedene Dämpfungen $\gamma$}
-	\label{fig:seite}
+	\includegraphics[width=290pt]{xy.pdf}
+	\caption{$X$-$Y$-Diagramm eines losgelassenen Pendels für drei geringfügig verschiedene Startpunkte.}
+	\label{fig:xy}
 \end{figure}
 
-\paragraph*{c)} In der Abbildung \ref{fig:seite} ist die Resonanzkurve eines harmonischen Oszillators mit Eingenfrequenz $\omega_E$, mit einer Antreibenden Frequenz $\omega_t$ und einer Amplitude der Antreibenden Kraft von $1$ für 6 verschiedene Dämpfungen $\gamma$  dargestellt.\\ 
-Dabei wird der Ort mit dem Verlet Verfahren (Listing \ref{C}) simuliert und die Geschwindigkeit wird mit der numerischen rechts Ableitung bestimmt.
-Nach einer Einschwingzeit von $\SI{180}{\radian}\;\omega_E^{-1}$ wird die Amplitude bestimmt, indem das Maximum gespeichert wird, bis nach weitere $\SI{120}{\radian}\;\omega_E^{-1}$ das Maximum ausgelesen wird. 
 
-\smallskip
+\section*{f)}
+Die Simulation im Programm \ref{F_Bild} ist identisch zu der im vorigen Teil, jedoch werden nun viele Punkte in der $x$-$y$-Ebene als Startpunkte gewählt. Für jeden Wert wird das Pendel ohne Anfangsgeschwindigkeit pendeln gelassen, bis es zum Stillstand gelangt, alternativ jedoch, falls $10000$ Simulationsschritte erreicht sind. Dann wird der Startpunkt des Pendels farbkodiert entsprechend dem Magneten, der dem Endpunkt am nächsten liegt. Die Positionen der Magnete sind dabei deutlich als große einfarbige Bereiche zu erkennen, ein hier losgelassenes Pendel pendelt erst gar nicht los.\\
+Im Schaubild \ref{fig:Bild} ist das Ergebnis zu bestaunen.
 
-\begin{figure}[p]
+
+\begin{figure}[t]
 	\centering
-	\includegraphics[width=450pt]{C_Plot.pdf}
-	\caption{2D Resonanzkurve für verschiedene Dämpfungen $\gamma$ mit Phasenverschiebung zur antreibenden Schwingung in \si{\radian}.}
-	\label{fig:plot}
+	\includegraphics[width=290pt]{xy.pdf}
+	\caption{Schaubild zur Illustration des chaotischen Verhaltens des Magnetpendels. Jeder Pixel im Bild stellt einen anderen Startpunkt dar. Die Farbe des jeweiligen Pixels entspricht dem Magneten, der dem Endpunkt am nächsten liegt. Die Magnete selbst sind mit Kreuzen markiert, und liegen in den drei großen einfarbigen Bereichen.}
+	\label{fig:Bild}
 \end{figure}
-\paragraph*{e)} Indem an dem Maximumszeitpunkt die Phase der antreibenden Schwingung $\omega_T \cdot t \mod 2\pi$ gespeichert wird, kann auch die Phasenverschiebung zwischen der antreibenden und resultierenden Schwingung bestimmt werden.
-Diese ist in $rad$ in der Abbildung \ref{fig:plot} dargestellt.
-Dabei ist schön der Phasensprung von $\pi$ bei der Resonanzkatastrophe bei schwacher Dämpfung zu sehen.
-
-\begin{figure}[p]
-	\centering
-	\includegraphics[width=400pt]{C_3D.pdf}
-	\caption{3D Darstellung der Resonanzkurve für verschiedene Dämpfungen $\gamma$}
-	\label{fig:3d}
-\end{figure}
-\paragraph*{d)}
-In Abbildung \ref{fig:3d} ist das Phasendiagramme für verschiedene Dämpfungen $\gamma$ als 3 dimensionale Oberfläche dargestellt.
 
 \clearpage
 \section*{Appendix - Code}
-\subsection*{a)}
-\lstinputlisting[label={A_Euler},caption={Simulation für die a) mit dem Euler Verfahren für verschiedene Schrittweiten},language=c]{A_ExplizitesEulerCauchyVerfahren.c}
-
-\lstinputlisting[label={A_LeapFrog},caption={Simulation für die a) mit dem Leap Frog Verfahren für verschiedene Schrittweiten},language=c]{A_LeapFrog.c}
-
-\lstinputlisting[label={A_RK},caption={Simulation für die a) mit dem Runge Kutta Verfahren 2. Ordnung für verschiedene Schrittweiten},language=c]{A_RungeKuttaZweiterOrdnung.c}
-
-\lstinputlisting[label={A_Verlet},caption={Simulation für die a) mit dem Verlet Verfahren für verschiedene Schrittweiten},language=c]{A_Verlet.c}
+\subsection*{c)}
+\lstinputlisting[label={E_Pfad},caption={Programm zur Simulation des Magnetpendels für drei jeweils um $\varepsilon$ verschobene Startpunkte.},language=c]{path.c}
 
 \clearpage
-\subsection*{b)}
-\lstinputlisting[label={B},caption={Simulation für die b) mit dem Verlet Verfahren und Dämpfung. Für verschiedene Dämpfungen wurde neu Kompaliert.},language=c]{B_Mehrschrittverfahren.c}
-
-\clearpage
-\subsection*{c,d,e)}
-\lstinputlisting[label={C},caption={Simulation für die c,d,e) mit dem Verlet Verfahren für verschiedene Dämpfungen und Anregungsfrequenzen},language=c]{C_Erzwungen.c}
-
+\subsection*{f)}
+\lstinputlisting[label={F_Bild},caption={Simulation des Magnetpendels zum erstellen eines Schaubildes. Die Farbe im Bild kodiert den nächstgelegenen Magneten am Ende der Simulationszeit für den jeweiligen Startpunkt.},language=c]{magnetpendel.c}
 
 \end{document}
-
-    © 2022 GitHub, Inc.
-
-    Terms
-    Privacy
-    Security
-    Status
-    Docs
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
-
-Loading complete
