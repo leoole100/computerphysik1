@@ -38,8 +38,8 @@ Die Magnete wurden in einem regelmäßigen Dreieck im Abstand $1$ um den Ursprun
 Die Simulation wurde im \textit{Leap-Frog-Verfahren} implementiert. Die Bewegungsgleichungen lauten dann
 
 \begin{align}
-&\vec{v}_{n+1} &= &\vec{v}_n &+ &H &\cdot &\vec{F}_{gesamt} / m \\\\
-&\vec{r}_{n+1} &= &\vec{r}_n &+ &H &\cdot &\vec{v}_{n+1}
+&\vec{v}_{n+1} &=& &\vec{v}_n + &H \cdot \vec{F}_{gesamt} / m \\\\
+&\vec{r}_{n+1} &=& &\vec{r}_n + &H \cdot \vec{v}_{n+1}
 \end{align}
 \\
 Dabei wurde für die Beschleunigung $m=1$ gewählt. Im Programm \ref{E_Pfad} taucht $m$ deshalb gar nicht auf.
@@ -66,7 +66,7 @@ Im Schaubild \ref{fig:Bild} ist das Ergebnis zu bestaunen.
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=290pt]{img/pfad2.pdf}
+	\includegraphics[width=290pt]{img/plot2.pdf}
 	\caption{Schaubild zur Illustration des chaotischen Verhaltens des Magnetpendels. Jeder Pixel im Bild stellt einen anderen Startpunkt dar. Die Farbe des jeweiligen Pixels entspricht dem Magneten, der dem Endpunkt am nächsten liegt. Die Magnete selbst sind mit Kreuzen markiert, und liegen in den drei großen einfarbigen Bereichen.}
 	\label{fig:Bild}
 \end{figure}
