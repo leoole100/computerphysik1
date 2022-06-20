@@ -22,8 +22,6 @@ int main(){
 	// substitute r to x = x/(x-1)^1 => dr = - (1+x)/(x-1)^3 
 	for(double x = 0; x < 1; x += H){ // and reversed direction
 		numerov(&y1, &y2, &x);
-		printf("%f\n", y2);
-		fprintf(file, "%f %f\n", x, y2);
 	}
 	
 	// Ergebnis:                        -0.039789
@@ -48,4 +46,7 @@ void numerov(double *y1, double *y2, double *x){
 	//double y = 2 * *y2 - *y1 - dr(*x) * powf(H, 2.)/12 * (rho(*x+H) + 10*rho(*x) + rho(*x-H));							// -0.027310
 	*y1 = *y2;
 	*y2 = y;
+
+	printf("%f %f %f %f\n", *x, *y2, dr(*x));
+	fprintf(file, "%f %f %f %f\n", *x, *y2, dr(*x));
 }
