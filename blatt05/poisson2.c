@@ -47,6 +47,6 @@ void numerov(double *y1, double *y2, double *x){
 	*y1 = *y2;
 	*y2 = y;
 
-	printf("%f %f %f %f\n", *x, *y2, dr(*x));
-	fprintf(file, "%f %f %f %f\n", *x, *y2, dr(*x));
+	printf("%f %f %f \n", *x, *y2, dr(*x));
+	fprintf(file, "%f %f %f \n", *x, *y2, dr(*x));
 }
