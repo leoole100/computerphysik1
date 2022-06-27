@@ -1,4 +1,4 @@
-all: multithreading test poisson poisson2
+all: multithreading test poisson poisson2 summation
 
 multithreading: multithreading.c
 	gcc -O3 $< -o $@ -Wall -lm -pthread
@@ -13,5 +13,9 @@ poisson: poisson.c
 	./$@
 
 poisson2: poisson2.c
+	gcc -O3 $< -o $@ -Wall -lm -pthread
+	./$@
+
+summation: summation.c
 	gcc -O3 $< -o $@ -Wall -lm -pthread
 	./$@
