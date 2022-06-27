@@ -19,3 +19,8 @@ poisson2: poisson2.c
 summation: summation.c
 	gcc -O3 $< -o $@ -Wall -lm -pthread
 	./$@
+
+
+vorlesung: vorlesung.c
+	gcc -O3 $< -o $@ -Wall -lm -pthread
+	./$@
