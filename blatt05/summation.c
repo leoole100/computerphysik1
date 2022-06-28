@@ -40,3 +40,18 @@ double rho(double x){
 double dr(double x){
 	return -(1 + x)/powf(x-1, 3.);
 }
+
+
+
+void numerov(double *y1, double *y2, double *x){
+	double y = 2 * *y2 - *y1 - powf(H, 2.)/12 * (dr(*x+H)*rho(*x+H) + 10*dr(*x)*rho(*x) + dr(*x-H)*rho(*x-H));			// -0.027310
+	//double y = 2 * *y2 - *y1 - dr(*x) * powf(H, 2.)/12 * (rho(*x+H) + 10*rho(*x) + rho(*x-H));							// -0.027310
+
+
+	*y1 = *y2;
+	*y2 = y;
+
+	printf("%f %f %f \n", *x, *y2, dr(*x));
+	fprintf(file, "%f %f %f \n", *x, *y2, dr(*x));
+}
+
