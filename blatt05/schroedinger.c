@@ -63,7 +63,7 @@ void findAndExport(int n){
 
 	// exporting
 	FILE *file;
-	char filename[10];
+	char filename[210];
 	snprintf(filename, 10, "out%02d.dat", n);
 	printf("saving in: %s\n", filename);
 	file = fopen(filename, "w+");
