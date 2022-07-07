@@ -35,7 +35,7 @@ int main(){
 void integ(double E){
     
     double y1 = 0, y2 = H;
-    for(double x = XMAX; x > 0; x -= H){
+    for(double x = X_MAX; x > 0; x -= H){
         numerov(&y1, &y2, x, E);
         //fprintf(file, "%f %f \n", x, y1);
     }
