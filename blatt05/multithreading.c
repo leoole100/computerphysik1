@@ -5,12 +5,17 @@
 
 #define NUM_THREADS 5
 
+void helper(int i){
+	printf("%d\n", i);
+}
+
 void *perform_work(void *arguments){
   int index = *((int *)arguments);
   int sleep_time = 1 + rand() % NUM_THREADS;
   printf("THREAD %d: Started.\n", index);  
   sleep(sleep_time); // doing some work
   printf("THREAD %d: Ended.\n", index);
+  helper(index);
   return NULL;
 }
 
