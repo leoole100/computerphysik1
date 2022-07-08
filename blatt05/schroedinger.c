@@ -7,7 +7,7 @@
 #define H 1.e-4
 #define X_MAX 15.
 #define N ((int) (X_MAX/H))
-#define EXPORT_STEPS 1000
+#define EXPORT_STEPS 1e3
 
 #define UNCERT_END .5e-15
 
@@ -47,7 +47,8 @@ void *findAndExport(void *argument){
 	const int n = *((int *)argument);
 
 	// create array for the wave Function
-	double phi[N];
+	// in the heap because the stack is too small
+	double* phi = malloc(N*sizeof(double));
 
 	// bisection to find the root
 	double E0 = guess[n]-UNCERT_GUESS;
@@ -56,9 +57,9 @@ void *findAndExport(void *argument){
 	do {
 		Ex = (E1+E0)/2.0;
 		
-		integ(Ex, &phi);
+		integ(Ex, phi);
 		tmp = phi[N-1];
-		integ(E0, &phi);
+		integ(E0, phi);
 
 		if(tmp*phi[N-1]>0)
 			E0=Ex;
