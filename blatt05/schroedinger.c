@@ -15,7 +15,7 @@
 double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 11, 12, 13, 14, 15, 16, 17, 18., 18.5, 19.5, 20., 21, 22, 22.5, 23.5, 24, 25.,25.5, 26.};
 //double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10};
 
-void integ(double E, double* phi);
+void integ(double E, double* psi);
 void numerov(double *y1, double *y2, double x, double E);
 void *findAndExport(void *argument);
 double V(double x);
@@ -48,7 +48,7 @@ void *findAndExport(void *argument){
 
 	// create array for the wave Function
 	// in the heap because the stack is too small
-	double* phi = malloc(N*sizeof(double));
+	double* psi = malloc(N*sizeof(double));
 
 	// bisection to find the root
 	double E0 = guess[n]-UNCERT_GUESS;
@@ -57,11 +57,11 @@ void *findAndExport(void *argument){
 	do {
 		Ex = (E1+E0)/2.0;
 		
-		integ(Ex, phi);
-		tmp = phi[0];
-		integ(E0, phi);
+		integ(Ex, psi);
+		tmp = psi[0];
+		integ(E0, psi);
 
-		if(tmp*phi[0]>0)
+		if(tmp*psi[0]>0)
 			E0=Ex;
 		else
 			E1=Ex;
@@ -72,11 +72,11 @@ void *findAndExport(void *argument){
 	// normalizing
 	double norm = 0;
 	for(int i=0; i<N; i++){
-		norm += phi[i]*phi[i]*H;
+		norm += psi[i]*psi[i]*H;
 	}
 	norm = sqrt(norm);
 	for(int i=0; i<N; i++){
-		phi[i] /= norm;
+		psi[i] /= norm;
 	}
 
 	// exporting
@@ -87,7 +87,7 @@ void *findAndExport(void *argument){
 	file = fopen(filename, "w+");
 	fprintf(file, "%f\n", E1);
 	for(int i=0; i<N; i+=EXPORT_STEPS){
-		fprintf(file, "%f %f\n", i*H, phi[i]);
+		fprintf(file, "%f %f\n", i*H, psi[i]);
 	}
 	fclose(file);
 
@@ -96,12 +96,12 @@ void *findAndExport(void *argument){
 }
 
 // integrating the wave function
-void integ(double E, double *phi){
+void integ(double E, double *psi){
 
 	double y1 = 0, y2 = 1e-10;
 	for(int i=0; i <= N; i++){
 		numerov(&y1, &y2, (N-i)*H, E);
-		phi[N-i] = y2;
+		psi[N-i] = y2;
 	}
 }
 

@@ -28,14 +28,27 @@ Analytisch
 
 \subsection{b)}
 
-\section{Aufgabe 6 - Shooting-Methode}
 
+\section{Aufgabe 6 - Shooting-Methode}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[scale = 1.388888888]{img/errorFunction.pdf}
 	\caption{Fehlerfunktion für verschiedene Energien}
 	\label{fig:shooting}
 \end{figure}
+In dieser Aufgabe sollte mit der Shooting Methode die Schrödingergleichung für ein lineares Potential $V(x\geq 0)=x$ gelöst werden. 
+Dabei wurde von $x=\infty$, bzw. $\text{X\_MAX}=30$, bis $x=0$ mit der Numerov-Methode integriert.
+Für die erste Randbedingung gilt $\psi(\infty\approx\text{X\_MAX})=0$, da das Potential unendlich ist.
+Für die andere Seite gilt $\psi(0)=0$, da $V(x<0)=\infty$.
+Damit diese erfüllt ist, muss die Fehlerfunktion $F(E) = \psi_E(0)$ eine Nullstelle haben.
+
+In Abbildung \ref{fig:shooting} ist diese Fehlerfunktion gegen die Energie $E$ gezeichnet.
+Die Daten wurden mit dem Program \ref{errorFkt} generiert.
+
+Da die Fehlerfunktion stetig ist, wird in Program \ref{poisson} das Bisections-Verfahren verwendet, um die Nullstellen zu finden.
+Dies wird ausgehen von Schätzungen gemacht, die aus dem Abbildung \ref{fig:shooting} abgelesen wurden.
+Nachdem das Intervall klein genug ist, wird die Wellenfunktion (im Array $\text{psi}$ gespeichert) normiert und abgespeichert.\\
+Da dieser Prozess für alle Schätzungen gemacht werden muss wurde dies parallelisiert.
 
 \begin{figure}[h!]
 	\centering
@@ -43,16 +56,19 @@ Analytisch
 	\caption{Potential mit verschiedenen Wellenfunktionen}
 	\label{fig:out}
 \end{figure}
+In Abbildung \ref{fig:out} sind die so erhaltenen Wellenfunktionen und Energien dargestellt.
 
+In Abbildung \ref{fig:large} sind die ersten 25 Wellenfunktionen dargestellt. Die Eigenenergien sind in der Abbildung \ref{fig:trend} dargestellt.
 
-\begin{figure}[h!]
+\clearpage
+\begin{figure}
 	\centering
 	\includegraphics[scale = 1.388888888]{img/large.pdf}
 	\caption{die ersten 25 Wellenfunktionen}
 	\label{fig:large}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}
 	\centering
 	\includegraphics[scale = 1.388888888]{img/trend.pdf}
 	\caption{Trend der Energieniveaus}
