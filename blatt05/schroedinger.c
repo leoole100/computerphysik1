@@ -9,19 +9,17 @@
 #define N ((int) (X_MAX/H))
 #define EXPORT_STEPS 1000
 
-#define UNCERT_END 1.e-15
+#define UNCERT_END .5e-15
 
 #define UNCERT_GUESS 0.5
 //double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 12, 14, 16, 18.5};
 double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 12};
 
-void integ(double E, double *phi);
+void integ(double E, double* phi);
 void numerov(double *y1, double *y2, double x, double E);
-void findAndExport(void *argument);
+void *findAndExport(void *argument);
 double V(double x);
 
-// has to be global else segmentation fault on stack (2 MB) with (8byte/double * N doubles)
-double phi[N];
 
 int main(){
 	const uint NUM_THREADS = sizeof(guess)/sizeof(double);
@@ -43,10 +41,12 @@ int main(){
 	return 0;
 }
 
-// find the root of the error function near the n-th guess and save the generated wavefunction
-void findAndExport(void *argument){
+// find the root of the error function near the n-th guess and save the generated wave function
+void *findAndExport(void *argument){
+	// get the index of the thread
 	const int n = *((int *)argument);
 
+	// create array for the wave Function
 	double phi[N];
 
 	// bisection to find the root
@@ -89,9 +89,12 @@ void findAndExport(void *argument){
 		fprintf(file, "%f %f\n", i*H, phi[i]);
 	}
 	fclose(file);
+
+	// end the task successfully
+	return 0;
 }
 
-// integrating the wavefunction
+// integrating the wave function
 void integ(double E, double *phi){
 
 	double y1 = 0, y2 = H;
