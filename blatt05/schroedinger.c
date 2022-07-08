@@ -4,14 +4,15 @@
 #include <stdbool.h>
 
 #define H .5e-5
-#define X_MAX 15.
+#define X_MAX 12.
 #define N ((int) (X_MAX/H))
 #define EXPORT_STEPS 1000
 
 #define UNCERT_END .5e-15
 
 #define UNCERT_GUESS 0.5
-double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 12, 14, 16, 18.5};
+//double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 12, 14, 16, 18.5};
+double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10};
 
 void integ(double E);
 void numerov(double *y1, double *y2, double x, double E);

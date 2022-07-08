@@ -9,19 +9,51 @@
 \author{Aurel Müller-Schönau und Leon Oleschko}
 \maketitle
 
-\section{Aufgabe 5}
+\section{Aufgabe 5 - Numerov-Verfahren}
 \subsection{a)}
+In Programm \ref{poisson} ist die Implementierung von 
+Analytisch
+\begin{alignat}{2}
+	\text{Numerisch: }&& -0.039788\\
+	\text{Analytisch: }&-\frac{1}{8\pi} \approx\;& -0.039788
+\end{alignat}
+
+\subsection{b)}
+
+\section{Aufgabe 6 - Shooting-Methode}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale = 1.388888888]{img/errorFunction.pdf}
+	\caption{Fehlerfunktion für verschiedene Energien}
+	\label{fig:shooting}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale = 1.388888888]{img/out.pdf}
+	\caption{Potential mit verschiedenen Wellenfunktionen}
+	\label{fig:out}
+\end{figure}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Code %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-\section*{Appendix - Code}
-\subsection*{c)}
-\lstinputlisting[label={E_Pfad},caption={
-	\dots
+\section{Code}
+
+\subsection*{5 a)}
+\lstinputlisting[label={poisson},caption={
+	Programm zum lösen der Poisson-Gleichung mit dem Numerov-Verfahren.	
 },language=c]{poisson.c}
+\clearpage
+
+\subsection*{6}
+\lstinputlisting[label={errorFkt},caption={
+	Programm zum aufzeichnen der Error-Funktion für verschiedene Energien.
+},language=c]{errorFkt.c}
 
 \clearpage
-\subsection*{f)}
 \lstinputlisting[label={F_Bild},caption={
 	\dots
 },language=c]{schroedinger.c}
