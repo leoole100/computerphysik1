@@ -1,4 +1,4 @@
-all: multithreading test poisson poisson2 summation vorlesung schroedinger errorFkt fehlerSuche
+all: multithreading test poisson poisson2 summation vorlesung schroedinger errorFkt fehlerSuche poisson_vorlesung
 
 multithreading: multithreading.c
 	gcc -O3 $< -o $@ -Wall -lm -pthread
@@ -36,5 +36,9 @@ errorFkt: errorFkt.c
 	./$@
 
 fehlerSuche: fehlerSuche.c
+	gcc -O3 $< -o $@ -Wall -lm -pthread
+	./$@
+
+poisson_vorlesung: poisson_vorlesung.c
 	gcc -O3 $< -o $@ -Wall -lm -pthread
 	./$@
