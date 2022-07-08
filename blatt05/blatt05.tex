@@ -10,25 +10,6 @@
 \author{Aurel Müller-Schönau und Leon Oleschko}
 \maketitle
 
-\section{Aufgabe 5 - Numerov-Verfahren}
-\subsection{a)}
-In Programm \ref{poisson} ist die Implementierung von 
-Analytisch
-\begin{alignat}{2}
-	\text{Numerisch: }&& -0.039788\\
-	\text{Analytisch: }&-\frac{1}{8\pi} \approx\;& -0.039788
-\end{alignat}
-
-\begin{align}
-	\frac{\partial}{\partial r} \phi &\propto - \rho(r)\\ 
-	\Rightarrow\quad \phi(0) &= \int_{\infty}^0 - \rho(r)\;dr^2 + \phi(\infty)\\
-	&\approx \int_{100}^0 - \rho(r)\;dr^2\\
-	&\approx \sum_{100}^0 - \rho(r)\;dr^2\\
-\end{align}
-
-\subsection{b)}
-
-
 \section{Aufgabe 6 - Shooting-Methode}
 \begin{figure}[h!]
 	\centering
@@ -44,21 +25,21 @@ Damit diese erfüllt ist, muss die Fehlerfunktion $F(E) = \psi_E(0)$ eine Nullst
 
 In Abbildung \ref{fig:shooting} ist diese Fehlerfunktion gegen die Energie $E$ gezeichnet.
 Die Daten wurden mit dem Program \ref{errorFkt} generiert.
+\clearpage
 
-Da die Fehlerfunktion stetig ist, wird in Program \ref{poisson} das Bisections-Verfahren verwendet, um die Nullstellen zu finden.
+Da die Fehlerfunktion stetig ist, wird in Program \ref{F_Bild} das Bisektions-Verfahren verwendet, um die Nullstellen zu finden.
 Dies wird ausgehen von Schätzungen gemacht, die aus dem Abbildung \ref{fig:shooting} abgelesen wurden.
 Nachdem das Intervall klein genug ist, wird die Wellenfunktion (im Array $\text{psi}$ gespeichert) normiert und abgespeichert.\\
 Da dieser Prozess für alle Schätzungen gemacht werden muss wurde dies parallelisiert.
 
-\begin{figure}[h!]
+\begin{figure}
 	\centering
 	\includegraphics[scale = 1.388888888]{img/out.pdf}
 	\caption{Potential mit verschiedenen Wellenfunktionen}
 	\label{fig:out}
 \end{figure}
-In Abbildung \ref{fig:out} sind die so erhaltenen Wellenfunktionen und Energien dargestellt.
-
-In Abbildung \ref{fig:large} sind die ersten 25 Wellenfunktionen dargestellt. Die Eigenenergien sind in der Abbildung \ref{fig:trend} dargestellt.
+In Abbildung \ref{fig:out} sind die so erhaltenen ersten 5 Wellenfunktionen und Energien dargestellt.\\s
+Weitere 25 Wellenfunktionen sind in Abbildung \ref{fig:large} zu sehen. Die Eigenenergien sind in der Abbildung \ref{fig:trend} dargestellt.\smallskip
 
 \clearpage
 \begin{figure}
@@ -67,7 +48,6 @@ In Abbildung \ref{fig:large} sind die ersten 25 Wellenfunktionen dargestellt. Di
 	\caption{die ersten 25 Wellenfunktionen}
 	\label{fig:large}
 \end{figure}
-
 \begin{figure}
 	\centering
 	\includegraphics[scale = 1.388888888]{img/trend.pdf}
@@ -79,12 +59,6 @@ In Abbildung \ref{fig:large} sind die ersten 25 Wellenfunktionen dargestellt. Di
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Code %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Code}
-
-\subsection*{5 a)}
-\lstinputlisting[label={poisson},caption={
-	Programm zum lösen der Poisson-Gleichung mit dem Numerov-Verfahren.	
-},language=c]{poisson.c}
-\clearpage
 
 \subsection*{6}
 \lstinputlisting[label={errorFkt},caption={

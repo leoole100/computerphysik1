@@ -39,8 +39,9 @@ int main() {
 	}
 	// remove linear part of solution
 	i=0;
-	for(x=H;x < XMAX;x += H)
-		fprintf(f,"%g %g\n",x,v[i++]-x*(v[(int)N-1]-v[(int)N-2])/H);
-
+	for(x=H;x < XMAX;x += H){
+		fprintf(f,"%g %g\n",x, v[i++]-x*(v[(int)N-1]-v[(int)N-2])/H);
+	}
+	fclose(f);
 	return 0;
 }

@@ -13,21 +13,23 @@ FILE *file;
 
 int main(){
 	// create array for results
-	double* chi = malloc(R_START/H * sizeof(double));
+	double* res = malloc(R_START/H * sizeof(double));
 
-	int i=N-1; double y1=0, y2 = H;
+	int i=0; double y1=0, y2 = H;
 	for(double r = R_START; r >= 0; r -= H){
 		numerov(&y1, &y2, r);
-		chi[i--] = y2;
+		res[i] = y2;
+		i++;
 	}
 
 	// remove linear part and save
-	file = fopen("poisson.dat", "w+");
-	i=N-1; double tmp, phi;
-	for(double r = R_START; r > 0; r -= H){
-		tmp = chi[i--]-r*(chi[(int)N-1]-chi[(int)N-2])/H;
-		phi = tmp/r;
-		fprintf(file, "%g %g %g\n", r, tmp, phi);
+	file = fopen("poisson.dat","w+");
+	i=0; double chi, phi;
+	for(double r = R_START; r >= 0; r -= H){
+		chi = res[i]-r*(res[0]-res[1])/H;
+		phi = chi/r;
+		fprintf(file, "%g %g %g\n", r, chi, res[i]);
+		i++;
 	}
 
 	fclose(file);
