@@ -3,7 +3,7 @@
 #include <math.h>
 
 #define H 1.e-4
-#define XMAX 25.
+#define XMAX 30.
 
 void integ(double E);
 
@@ -18,7 +18,7 @@ int main(){
     file = fopen("errorFkt.dat", "w+");
     
     
-    for(double E = 0.0; E < 20; E += 0.1){
+    for(double E = 0.0; E < XMAX; E += 0.1){
         integ(E);
     }
     
