@@ -5,15 +5,15 @@
 #include <pthread.h>
 
 #define H 1.e-4
-//#define X_MAX 30.
-#define X_MAX 14.
+#define X_MAX 30.
+//#define X_MAX 14.
 #define N ((int) (X_MAX/H))
 #define EXPORT_STEPS ((int) (0.1/H))
 #define UNCERT_END 1.e-12
 
 #define UNCERT_GUESS 0.25
-//double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 11, 12, 13, 14, 15, 16, 17, 18., 18.5, 19.5, 20., 21, 22, 22.5, 23.5, 24, 25.,25.5, 26.};
-double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10};
+double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 11, 12, 13, 14, 15, 16, 17, 18., 18.5, 19.5, 20., 21, 22, 22.5, 23.5, 24, 25.,25.5, 26.};
+//double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10};
 
 void integ(double E, double* phi);
 void numerov(double *y1, double *y2, double x, double E);
