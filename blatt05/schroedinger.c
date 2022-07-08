@@ -4,16 +4,16 @@
 #include <stdbool.h>
 #include <pthread.h>
 
-#define H 1.e-4
-#define X_MAX 15.
+#define H 1.e-5
+//#define X_MAX 30.
+#define X_MAX 14.
 #define N ((int) (X_MAX/H))
-#define EXPORT_STEPS 1e3
+#define EXPORT_STEPS ((int) (0.1/H))
+#define UNCERT_END 1.e-14
 
-#define UNCERT_END .5e-15
-
-#define UNCERT_GUESS 0.5
-//double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 12, 14, 16, 18.5};
-double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 12};
+#define UNCERT_GUESS 0.25
+//double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10, 11, 12, 13, 14, 15, 16, 17, 18., 18.5, 19., 20., 21, 21.5, 22.5, 23.5, 24, 25.,25.5, 26.};
+double guess[] = {2.5, 4.5, 6, 7.5, 8.5, 10};
 
 void integ(double E, double* phi);
 void numerov(double *y1, double *y2, double x, double E);
@@ -26,7 +26,7 @@ int main(){
 	int thread_args[NUM_THREADS];
 	pthread_t threads[NUM_THREADS];
 
-	// crate a thread for each guess
+	// create a thread for each guess
 	for (int i = 0; i < NUM_THREADS; i++){
     	thread_args[i] = i;
 		pthread_create(&threads[i], NULL, findAndExport, &thread_args[i]);
@@ -58,10 +58,10 @@ void *findAndExport(void *argument){
 		Ex = (E1+E0)/2.0;
 		
 		integ(Ex, phi);
-		tmp = phi[N-1];
+		tmp = phi[0];
 		integ(E0, phi);
 
-		if(tmp*phi[N-1]>0)
+		if(tmp*phi[0]>0)
 			E0=Ex;
 		else
 			E1=Ex;
@@ -98,10 +98,10 @@ void *findAndExport(void *argument){
 // integrating the wave function
 void integ(double E, double *phi){
 
-	double y1 = 0, y2 = H;
-	for(int i=0; i < N; i++){
-		numerov(&y1, &y2, i*H, E);
-		phi[i] = y2;
+	double y1 = 0, y2 = 1e-10;
+	for(int i=0; i <= N; i++){
+		numerov(&y1, &y2, (N-i)*H, E);
+		phi[N-i] = y2;
 	}
 }
 

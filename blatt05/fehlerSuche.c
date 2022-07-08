@@ -3,7 +3,8 @@
 #include <math.h>
 
 #define H 1.e-4
-#define XMAX 25.
+#define XMAX 15.
+#define EXPORT_RES 0.1
 
 void integ(double E);
 
@@ -15,16 +16,11 @@ FILE *file;
 
 int main(){
     
-    file = fopen("errorFkt.dat", "w+");
+    file = fopen("fehlerSuche.dat", "w+");
     
     
-    for(double E = 0.0; E < 20; E += 0.1){
-        integ(E);
-    }
-    
-    //integ(5.0);
-    
-    
+	integ(2.57333);
+
     
     fclose(file);
     
@@ -37,9 +33,8 @@ void integ(double E){
     double y1 = 0, y2 = H;
     for(double x = XMAX; x > 0; x -= H){
         numerov(&y1, &y2, x, E);
-        //fprintf(file, "%f %f \n", x, y1);
-    }
-    fprintf(file, "%f %f \n", E, y2);
+		fprintf(file, "%f %f \n", x, y1);
+	}
 }
 
 void numerov(double *y1, double *y2, double x, double E){
