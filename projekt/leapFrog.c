@@ -33,7 +33,7 @@ int main()
 {
 	// setup    ////////////////////////////////////////////////////////////////////////////////////////////////////
 	// open output file for the trajectory
-	FILE * trajectory_file = fopen("data/trajectory.dat", "rw");
+	FILE * trajectory_file = fopen("data/trajectory.dat", "w+");
 
 	// count number of planets
 	__uint8_t planet_num = getPlanetNumber();
@@ -63,6 +63,9 @@ int main()
 	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
 	printf("starting loop\n");
 	for(double t = 0; t < TMAX; t++){
+		// save current position
+		fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
+
 		// reset force
 		a[0] = 0;
 		a[1] = 0;
@@ -84,12 +87,13 @@ int main()
 			// calculate force
 			double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
 			double fac = -G*planet_weights[i]/r_norm/r_norm;
+			printf("%g %g %g\n",fac, tmp[1], tmp[2]);
 			a[0] += fac*tmp[0];
 			a[1] += fac*tmp[1];
 			a[2] += fac*tmp[2];
 		}
 		// print force
-		printf("%lf %lf %lf\n", a[0], a[1], a[2]);
+		//printf("%lf %lf %lf\n", a[0], a[1], a[2]);
 
 		// Leap Frog step
 		v[0] += a[0];
