@@ -18,11 +18,19 @@
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 
-double r[3], v[3]; // coordinate and velocity of spacecraft
+// coordinate and velocity of spacecraft
+double r[3] = {-4.45081, 2.11055, 0.105762}; // actual data
+double v[3] = {-1.0, -0.1, 0.0}; // test data 
+
 double f[3]; // force on spacecraft
 
 int main()
 {
+	// setup    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// open output file for the trajectory
+	FILE * trajectory_file = fopen("data/trajectory.txt", "rw");
+
 	// count number of planets
 	__uint8_t planet_num = getPlanetNumber();
 
