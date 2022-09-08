@@ -34,20 +34,24 @@ int main()
 		printf("	%lf\n", planet_weights[i]);
 	}
 
-	// read planet cordinates
-	printf("Planet cordinates:\n");
-	double planet_coords[planet_num-1][3];
+	// read planet coordinates
+	printf("Planet coordinates:\n");
+	double planet_coords[planet_num-1][2];
 	for (size_t i = 0; i < planet_num; i++){
+		printf("%d:", i);
+
 		for (size_t j = 0; j < 3; j++){
 			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
 			printf("	%lf\n", planet_coords[i][j]);
 		}
 	}
-
+	
+	/*
 	// close files
-	for (size_t i = 0; i < planet_num; i++){
+	printf("Closing files...\n");
+	for (size_t i = 0; i < planet_num-1; i++){
 		fclose(planet_files[i]);
-	}
+	}*/
 
 	return(0);
 }

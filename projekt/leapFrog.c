@@ -87,7 +87,6 @@ int main()
 			// calculate force
 			double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
 			double fac = -G*planet_weights[i]/r_norm/r_norm;
-			printf("%g %g %g\n",fac, tmp[1], tmp[2]);
 			a[0] += fac*tmp[0];
 			a[1] += fac*tmp[1];
 			a[2] += fac*tmp[2];
@@ -105,7 +104,7 @@ int main()
 	}
 
 	// end    //////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	printf("closing files\n");	
 	// close planet files
 	for (size_t i = 0; i < planet_num; i++){
 		fclose(planet_files[i]);
