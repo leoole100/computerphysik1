@@ -19,18 +19,20 @@ int main()
 	openPlanetFiles(planet_num, planet_files);
 
 	// read planet weights
+	printf("Planet weights:\n");
 	double planet_weights[planet_num-1];
 	for (size_t i = 0; i < planet_num; i++){
 		fscanf(planet_files[i], "%lf", &planet_weights[i]);
-		//printf("%lf\n", planet_weights[i]);
+		printf("	%lf\n", planet_weights[i]);
 	}
 
-
+	// read planet cordinates
+	printf("Planet cordinates:\n");
 	double planet_coords[planet_num-1][3];
 	for (size_t i = 0; i < planet_num; i++){
 		for (size_t j = 0; j < 3; j++){
 			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
-			printf("%lf\n", planet_coords[i][j]);
+			printf("	%lf\n", planet_coords[i][j]);
 		}
 	}
 
