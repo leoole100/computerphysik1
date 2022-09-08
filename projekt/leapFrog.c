@@ -47,7 +47,7 @@ int main()
 	}
 
 	// read planet cordinates
-	printf("Planet cordinates:\n");
+	printf("Planets:\n");
 	double planet_coords[planet_num-1][3];
 	for (size_t i = 0; i < planet_num; i++){
 		for (size_t j = 0; j < 3; j++){
