@@ -23,7 +23,7 @@ int main()
 	__uint8_t planet_num = getPlanetNumber();
 
 	// create planet array
-	FILE * planet_files[planet_num];
+	FILE * planet_files[planet_num-1];
 	openPlanetFiles(planet_num, planet_files);
 
 	// read planet weights
@@ -42,6 +42,7 @@ int main()
 
 		for (size_t j = 0; j < 3; j++){
 			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
+			//fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
 			printf("	%lf\n", planet_coords[i][j]);
 		}
 	}

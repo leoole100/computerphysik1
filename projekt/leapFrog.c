@@ -15,6 +15,7 @@
 
 #define PLANET_PATH "data/planets/"
 #define TMAX 529
+#define SUB_STEPS 1e3
 
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
@@ -39,7 +40,7 @@ int main()
 	__uint8_t planet_num = getPlanetNumber();
 
 	// create planet array
-	FILE * planet_files[planet_num];
+	FILE * planet_files[planet_num-1];
 	openPlanetFiles(planet_num, planet_files);
 
 	// read planet weights
@@ -50,57 +51,52 @@ int main()
 		printf("	%lf\n", planet_weights[i]);
 	}
 
-	// read planet cordinates
-	printf("Planets:\n");
-	double planet_coords[planet_num-1][3];
-	for (size_t i = 0; i < planet_num; i++){
-		for (size_t j = 0; j < 3; j++){
-			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
-			printf("	%lf\n", planet_coords[i][j]);
-		}
-	}
-
 	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
 	printf("starting loop\n");
-	for(double t = 0; t < TMAX; t++){
+	for(double day = 0; day < TMAX; day++){
 		// save current position
 		fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
 
-		// reset force
-		a[0] = 0;
-		a[1] = 0;
-		a[2] = 0;
-
-		// calculate force on spacecraft
+		double planet_coords[planet_num-1][2];
 		for (size_t i = 0; i < planet_num; i++){
-			// read planet position
-			double planet_pos[3];
 			for (size_t j = 0; j < 3; j++){
-				fscanf(planet_files[i], "%lf", &planet_pos[j]);
+				fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
+				//printf("	%lf\n", planet_coords[i][j]);
 			}
-
-			// calculate distance
-			tmp[0] = planet_pos[0] - r[0];
-			tmp[1] = planet_pos[1] - r[1];
-			tmp[2] = planet_pos[2] - r[2];
-
-			// calculate force
-			double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
-			double fac = -G*planet_weights[i]/r_norm/r_norm;
-			a[0] += fac*tmp[0];
-			a[1] += fac*tmp[1];
-			a[2] += fac*tmp[2];
 		}
-		// print force
-		//printf("%lf %lf %lf\n", a[0], a[1], a[2]);
 
-		// Leap Frog step
-		v[0] += a[0];
-		v[1] += a[1];
-		v[2] += a[2];
-		r[0] += v[0];
-		r[1] += v[1];
-		r[2] += v[2];
+		// create sup steps
+		for(size_t sub_step = 0; sub_step < SUB_STEPS; sub_step++){	
+			// reset force
+			a[0] = 0;
+			a[1] = 0;
+			a[2] = 0;
+
+			// calculate force on spacecraft
+			for (size_t i = 0; i < planet_num; i++){
+				// calculate distance
+				tmp[0] = planet_coords[i][0] - r[0];
+				tmp[1] = planet_coords[i][1] - r[1];
+				tmp[2] = planet_coords[i][2] - r[2];
+
+				// calculate force
+				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
+				double fac = -G*planet_weights[i]/r_norm/r_norm;
+				a[0] += fac*tmp[0];
+				a[1] += fac*tmp[1];
+				a[2] += fac*tmp[2];
+			}
+			// print force
+			//printf("%lf %lf %lf\n", a[0], a[1], a[2]);
+
+			// Leap Frog step
+			v[0] += a[0] / SUB_STEPS;
+			v[1] += a[1] / SUB_STEPS;
+			v[2] += a[2] / SUB_STEPS;
+			r[0] += v[0] / SUB_STEPS;
+			r[1] += v[1] / SUB_STEPS;
+			r[2] += v[2] / SUB_STEPS;
+		}
 	}
 
 	// end    //////////////////////////////////////////////////////////////////////////////////////////////////////
