@@ -25,7 +25,7 @@ double v[3] = {-0.0136719, 0.0454019, 0.00156573}; // in AU per day
 
 double G = 1.4882e-34; // in AU^3 / kg day^2
 // double m =  367.0; // in kg // kuertzt sich eingenlicht raus
-double a[3]; // force on spacecraft
+double a[3]; // force on spacecraft divided by mass
 
 double tmp[3];
 
@@ -57,7 +57,8 @@ int main()
 		for (size_t j = 0; j < 3; j++){
 			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
 			printf("	%lf\n", planet_coords[i][j]);
-=======
+		}
+	}
 
 	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
 	printf("starting loop\n");
