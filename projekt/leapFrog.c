@@ -21,10 +21,12 @@ __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 
 // coordinate and velocity of spacecraft
-double r[3] = {0.973474, 0.224386, 0.000174358}; // in AU
-double v[3] = {-0.0136719, 0.0454019, 0.00156573}; // in AU per day
+//double r[3] = {0.973474, 0.224386, 0.000174358}; // in AU
+//double v[3] = {-0.0136719, 0.0454019, 0.00156573}; // in AU per day
 //double r[3] = {-4.45081, 2.11055, 0.105762}; // in AU
 //double v[3] = {-0.0185272, -0.00171491, -0.000519065}; // in AU per day
+double r[3] = {-0.445189, 1.66962, 0.0600396}; // in AU
+double v[3] = {-0.032168, 0.0139542, 0.000763952}; // in AU per day
 
 double G = 1.4882e-34; // in AU^3 / kg day^2
 // double m =  367.0; // in kg // kuertzt sich eingenlicht raus
@@ -55,10 +57,16 @@ int main()
 
 	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
 	printf("starting loop\n");
-	for(double day = 0; day < TMAX; day++){
+	for(int day = 0; day < TMAX; day++){
+		// log progress
+		if(day % (TMAX/10) == 0){
+			printf("	%g % \n", (100. * day)/TMAX);
+		}
+
 		// save current position
 		fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
 
+		// get planet positions
 		double planet_coords[planet_num][2];
 		for (size_t i = 0; i < planet_num; i++){
 			for (size_t j = 0; j < 3; j++){
@@ -84,6 +92,7 @@ int main()
 				// calculate force
 				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
 				double fac = G*planet_weights[i]/powf(r_norm, 3);
+				fac *= 1e4;
 				a[0] += fac*tmp[0];
 				a[1] += fac*tmp[1];
 				a[2] += fac*tmp[2];
