@@ -1,7 +1,7 @@
 /**
- * @file readPlanetList.c
- * @brief example of reading the planet data from the directory
- * @version 1.0
+ * @file leapFrog.c
+ * @brief simulation of the trajectory with the leap frog algorithm
+ * @version 0.1
  * @date 2022-09-08
  * 
  */
@@ -11,11 +11,15 @@
 #include <string.h>
 #include <dirent.h> 
 #include <unistd.h>
+#include <math.h>
 
 #define PLANET_PATH "data/planets/" 
 
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
+
+double r[3], v[3]; // coordinate and velocity of spacecraft
+double f[3]; // force on spacecraft
 
 int main()
 {
