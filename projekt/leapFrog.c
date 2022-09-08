@@ -14,8 +14,8 @@
 #include <math.h>
 
 #define PLANET_PATH "data/planets/"
-#define TMAX 529
-#define SUB_STEPS 1e3
+#define TMAX 1e4//529
+#define SUB_STEPS 1
 
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
@@ -65,7 +65,7 @@ int main()
 			}
 		}
 
-		// create sup steps
+		// sup steps
 		for(size_t sub_step = 0; sub_step < SUB_STEPS; sub_step++){	
 			// reset force
 			a[0] = 0;
@@ -81,7 +81,7 @@ int main()
 
 				// calculate force
 				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
-				double fac = -G*planet_weights[i]/r_norm/r_norm;
+				double fac = G*planet_weights[i]/powf(r_norm, 3);
 				a[0] += fac*tmp[0];
 				a[1] += fac*tmp[1];
 				a[2] += fac*tmp[2];
