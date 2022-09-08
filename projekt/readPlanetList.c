@@ -1,7 +1,7 @@
 /**
  * @file readPlanetList.c
  * @brief example of reading the planet data from the directory
- * @version 1.0
+ * @version 1.2
  * @date 2022-09-08
  * 
  */
@@ -21,14 +21,15 @@ int main()
 {
 	// count number of planets
 	__uint8_t planet_num = getPlanetNumber();
-
+	
 	// create planet array
-	FILE * planet_files[planet_num-1];
+	FILE * planet_files[planet_num];
 	openPlanetFiles(planet_num, planet_files);
+
 
 	// read planet weights
 	printf("Planet weights:\n");
-	double planet_weights[planet_num-1];
+	double planet_weights[planet_num];
 	for (size_t i = 0; i < planet_num; i++){
 		fscanf(planet_files[i], "%lf", &planet_weights[i]);
 		printf("	%g\n", planet_weights[i]);
@@ -36,16 +37,14 @@ int main()
 
 	// read planet coordinates
 	printf("Planet coordinates:\n");
-	double planet_coords[planet_num-1][2];
+	double planet_coordinates[planet_num][3];
 	for (size_t i = 0; i < planet_num; i++){
-		printf("%d:", i);
-
 		for (size_t j = 0; j < 3; j++){
-			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
-			//fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
-			printf("	%g\n", planet_coords[i][j]);
+			fscanf(planet_files[i], "%lf", &planet_coordinates[i][j]);
+			printf("	%g\n", planet_coordinates[i][j]);
 		}
 	}
+
 	
 	/*
 	// close files
