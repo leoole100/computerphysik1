@@ -13,23 +13,27 @@
 #include <unistd.h>
 #include <math.h>
 
-#define PLANET_PATH "data/planets/" 
+#define PLANET_PATH "data/planets/"
+#define TMAX 529
 
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 
 // coordinate and velocity of spacecraft
-double r[3] = {-4.45081, 2.11055, 0.105762}; // actual data
-double v[3] = {-1.0, -0.1, 0.0}; // test data 
+double r[3] = {0.973474, 0.224386, 0.000174358}; // in AU
+double v[3] = {-0.0136719, 0.0454019, 0.00156573}; // in AU per day
 
-double f[3]; // force on spacecraft
+double G = 1.4882e-34; // in AU^3 / kg day^2
+// double m =  367.0; // in kg // kuertzt sich eingenlicht raus
+double a[3]; // force on spacecraft
+
+double tmp[3];
 
 int main()
 {
 	// setup    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	// open output file for the trajectory
-	FILE * trajectory_file = fopen("data/trajectory.txt", "rw");
+	FILE * trajectory_file = fopen("data/trajectory.dat", "rw");
 
 	// count number of planets
 	__uint8_t planet_num = getPlanetNumber();
@@ -53,13 +57,57 @@ int main()
 		for (size_t j = 0; j < 3; j++){
 			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
 			printf("	%lf\n", planet_coords[i][j]);
+=======
+
+	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
+	printf("starting loop\n");
+	for(double t = 0; t < TMAX; t++){
+		// reset force
+		a[0] = 0;
+		a[1] = 0;
+		a[2] = 0;
+
+		// calculate force on spacecraft
+		for (size_t i = 0; i < planet_num; i++){
+			// read planet position
+			double planet_pos[3];
+			for (size_t j = 0; j < 3; j++){
+				fscanf(planet_files[i], "%lf", &planet_pos[j]);
+			}
+
+			// calculate distance
+			tmp[0] = planet_pos[0] - r[0];
+			tmp[1] = planet_pos[1] - r[1];
+			tmp[2] = planet_pos[2] - r[2];
+
+			// calculate force
+			double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
+			double fac = -G*planet_weights[i]/r_norm/r_norm;
+			a[0] += fac*tmp[0];
+			a[1] += fac*tmp[1];
+			a[2] += fac*tmp[2];
 		}
+		// print force
+		printf("%lf %lf %lf\n", a[0], a[1], a[2]);
+
+		// Leap Frog step
+		v[0] += a[0];
+		v[1] += a[1];
+		v[2] += a[2];
+		r[0] += v[0];
+		r[1] += v[1];
+		r[2] += v[2];
 	}
 
-	// close files
+	// end    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// close planet files
 	for (size_t i = 0; i < planet_num; i++){
 		fclose(planet_files[i]);
 	}
+
+	// close trajectory file
+	fclose(trajectory_file);
 
 	return(0);
 }
