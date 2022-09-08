@@ -31,7 +31,7 @@ int main()
 	double planet_weights[planet_num-1];
 	for (size_t i = 0; i < planet_num; i++){
 		fscanf(planet_files[i], "%lf", &planet_weights[i]);
-		printf("	%lf\n", planet_weights[i]);
+		printf("	%g\n", planet_weights[i]);
 	}
 
 	// read planet coordinates
@@ -43,7 +43,7 @@ int main()
 		for (size_t j = 0; j < 3; j++){
 			fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
 			//fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
-			printf("	%lf\n", planet_coords[i][j]);
+			printf("	%g\n", planet_coords[i][j]);
 		}
 	}
 	
