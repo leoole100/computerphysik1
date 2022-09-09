@@ -1,7 +1,7 @@
 /**
  * @file leapFrog.c
  * @brief simulation of the trajectory with the leap frog algorithm
- * @version 0.1
+ * @version 0.8
  * @date 2022-09-08
  * 
  */

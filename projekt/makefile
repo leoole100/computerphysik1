@@ -1,9 +1,9 @@
-all:leapFrog
+all:trajectory
 
 readPlanetList: readPlanetList.c
 	gcc -O3 $< -o $@.out
 	./$@.out
 
-leapFrog: leapFrog.c
+trajectory: trajectory.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
