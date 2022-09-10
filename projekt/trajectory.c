@@ -14,7 +14,7 @@
 #include <math.h>
 
 #define PLANET_PATH "data/planets/"
-#define TMAX 800 // in days
+#define TMAX 400 // in days
 #define SUB_STEPS 1e3
 
 __uint8_t getPlanetNumber();

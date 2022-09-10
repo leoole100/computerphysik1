@@ -34,8 +34,6 @@ double tmp[3];
 int main()
 {
 	// setup    ////////////////////////////////////////////////////////////////////////////////////////////////////
-	// open output file for the trajectory
-	FILE * trajectory_file = fopen("data/trajectory.dat", "w+");
 
 	// count number of planets
 	__uint8_t planet_num = getPlanetNumber();
@@ -65,9 +63,6 @@ int main()
 		if(day % (TMAX/10) == 0){
 			printf("	%g % \n", (100. * day)/TMAX);
 		}
-
-		// save current position
-		fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
 
 		// get planet positions
 		double planet_coords[planet_num][3];
@@ -118,9 +113,6 @@ int main()
 	for (size_t i = 0; i < planet_num; i++){
 		fclose(planet_files[i]);
 	}
-
-	// close trajectory file
-	fclose(trajectory_file);
 
 	return(0);
 }
