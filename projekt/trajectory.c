@@ -1,7 +1,7 @@
 /**
  * @file leapFrog.c
  * @brief simulation of the trajectory with the leap frog algorithm
- * @version 0.8
+ * @version 1.0
  * @date 2022-09-08
  * 
  */
@@ -14,15 +14,15 @@
 #include <math.h>
 
 #define PLANET_PATH "data/planets/"
-#define TMAX 500 // in days
+#define TMAX 800 // in days
 #define SUB_STEPS 1e3
 
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 
 // coordinate and velocity of spacecraft
-double r[3] = {-0.445189, 1.66962, 0.0600396}; // in AU
-double v[3] = {-0.016015, 0.00705171, 0.000381976}; // in AU per day
+double r[3] = {0.901865, 0.424962, 0.00748233}; // in AU
+double v[3] = {-0.00937424, 0.0215741, 0.000878397}; // in AU per day
 
 
 double G = 1.4882e-34; // in AU^3 / kg day^2
@@ -64,7 +64,7 @@ int main()
 		fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
 
 		// get planet positions
-		double planet_coords[planet_num][2];
+		double planet_coords[planet_num][3];
 		for (size_t i = 0; i < planet_num; i++){
 			for (size_t j = 0; j < 3; j++){
 				fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
@@ -89,7 +89,7 @@ int main()
 				// calculate force
 				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
 				double fac = G*planet_weights[i]/powf(r_norm, 3);
-				fac *= 1e3;
+				//fac *= 1e3;
 				a[0] += fac*tmp[0];
 				a[1] += fac*tmp[1];
 				a[2] += fac*tmp[2];
