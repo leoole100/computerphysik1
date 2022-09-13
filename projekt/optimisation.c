@@ -24,6 +24,10 @@ void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 double r[3] = {0.901865, 0.424962, 0.00748233}; // in AU
 double v[3] = {-0.00937424, 0.0215741, 0.000878397}; // in AU per day
 
+// target position and velocity after around t_target days
+const double t_target = 519; // in days
+const double r_target[3] = {-4.99443, 2.04633, -0.08102}; // in AU
+const double v_target[3] = {-0.000289745, -0.000899298, -0.00471008}; // in AU per day
 
 double G = 1.4882e-34; // in AU^3 / kg day^2
 // double m =  367.0; // in kg // kuertzt sich eingenlicht raus
