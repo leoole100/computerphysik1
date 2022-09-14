@@ -14,20 +14,25 @@
 #include <math.h>
 
 #define PLANET_PATH "data/planets/"
-#define TMIN 470
-#define TMAX 520 // in days
+#define TMAX 519 // in days
 #define SUB_STEPS 1e3
+#define MAX_ITERATION 1000
 
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
-
+/*
 //boundary conditions of Dirichlet Problem (r=r(t_0), r_end=r(t_end))
 double r_start[3] = {-4.89012662928316,2.06668956508917,0.107497865687179};
 
-double r_end[3] = {-4.99420978998632,2.0533814621652,-0.038641227220261};
+double r_end[3] = {-4.99443, 2.04633, -0.08102};
 
 //initial guess for velocity v(r_0)
 double v_start[3] = {-0.00917009, -0.00114656, 0.0001619}; // in AU per day
+*/
+double r_start[3] = {0.901865, 0.424962, 0.00748233}; // in AU
+double v_start[3] = {-0.00937424, 0.0215741, 0.000878397}; // in AU per day
+double r_end[3] = {-4.99443, 2.04633, -0.08102};
+
 
 //arrays for calculated values
 double r[3];
@@ -44,52 +49,53 @@ double tmp[3];
 
 int main()
 {
-	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
-	printf("starting loop\n");
+	// optimisation loop    ////////////////////////////////////////////////////////////////////////////////////////////////////
+	printf("starting optimisation loop\n");
 	//start with given initialguess of v_start
-	for(int iterationcounter = 0; iterationcounter < 1000	; iterationcounter++ ){
+	for(int iterationcounter = 0; iterationcounter < MAX_ITERATION	; iterationcounter++ ){
 		
-		// setup    ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// setup    /////////////////////////////////////////////
 		// open output file for the trajectory
 		FILE * trajectory_file = fopen("data/trajectory.dat", "w+");
 
 		// count number of planets
 		__uint8_t planet_num = getPlanetNumber();
 		
-			//initialize r(t_0) 
-			r[0]=r_start[0];
-			r[1]=r_start[1];
-			r[2]=r_start[2];
-			//initialize v(t_0)
-			v[0]=v_start[0];
-			v[1]=v_start[1];
-			v[2]=v_start[2];
+		//initialize r(t_0) 
+		r[0]=r_start[0];
+		r[1]=r_start[1];
+		r[2]=r_start[2];
+		//initialize v(t_0)
+		v[0]=v_start[0];
+		v[1]=v_start[1];
+		v[2]=v_start[2];
 			
-		//leap frog	
-		for(int day = TMIN; day < TMAX; day++){
+		// leap frog -- Loop over days //////////////////////////
+		for(int day = 0; day < TMAX; day++){
 
 			// create planet array
 			FILE * planet_files[planet_num];
 			openPlanetFiles(planet_num, planet_files);
 
 			// read planet weights
-			
 			double planet_weights[planet_num];
+			//printf("Planet weights:\n");
 			for (size_t i = 0; i < planet_num; i++){
 				fscanf(planet_files[i], "%lf", &planet_weights[i]);
+				//printf("	%g\n", planet_weights[i]);
 			}
 
-		// log progress
-		if(day % (TMAX/10) == 0){
-			printf("	%g % \n", (100. * day)/TMAX);
-		}
+			// log progress
+			/*if(day % (TMAX/10) == 0){
+				printf("	%g % \n", (100. * day)/TMAX);
+			}*/
 
-		// save current position
-		fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
+			// save current position
+			fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]);
 
-		double planet_coords[planet_num][3];
-		//skip rows until number of row == day
-			for(int row = 0 ; row < day ; row++){
+			double planet_coords[planet_num][3];
+			//skip rows until number of row == day
+			/*for(int row = 0 ; row < day ; row++){
 				for (size_t i = 0; i < planet_num; i++)
 					{
 					for (size_t j = 0; j < 3; j++){
@@ -97,81 +103,80 @@ int main()
 					}
 					}
 					//printf("day %i", row);
-			}
+			}*/
 
-		// get planet positions 
-		for (size_t i = 0; i < planet_num; i++){
-			for (size_t j = 0; j < 3; j++){
-				fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
-				//printf("	%lf\n", planet_coords[i][j]);
-			}
-		}
-
-		// sup steps
-		for(size_t sub_step = 0; sub_step < SUB_STEPS; sub_step++){	
-			// reset force
-			a[0] = 0;
-			a[1] = 0;
-			a[2] = 0;
-
-			// calculate force on spacecraft
+			// get planet positions 
 			for (size_t i = 0; i < planet_num; i++){
-				// calculate distance
-				tmp[0] = planet_coords[i][0] - r[0];
-				tmp[1] = planet_coords[i][1] - r[1];
-				tmp[2] = planet_coords[i][2] - r[2];
-
-				// calculate force
-				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
-				double fac = G*planet_weights[i]/powf(r_norm, 3);
-				a[0] += fac*tmp[0];
-				a[1] += fac*tmp[1];
-				a[2] += fac*tmp[2];
+				for (size_t j = 0; j < 3; j++){
+					fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
+					//printf("	%lf\n", planet_coords[i][j]);
+				}
 			}
-			// print force
-			//printf("%lf %lf %lf\n", a[0], a[1], a[2]);
 
-			// Leap Frog step
-			v[0] += a[0] / SUB_STEPS;
-			v[1] += a[1] / SUB_STEPS;
-			v[2] += a[2] / SUB_STEPS;
-			r[0] += v[0] / SUB_STEPS;
-			r[1] += v[1] / SUB_STEPS;
-			r[2] += v[2] / SUB_STEPS;
-		}
-		//printf("x_koordinate %f\n", planet_coords[1][0]);
-		//printf("closing files\n");	
-		// close planet files
-		for (size_t i = 0; i < planet_num; i++){
-			fclose(planet_files[i]);
+			// sup steps
+			for(size_t sub_step = 0; sub_step < SUB_STEPS; sub_step++){	
+				// reset force
+				a[0] = 0;
+				a[1] = 0;
+				a[2] = 0;
+
+				// calculate force on spacecraft
+				for (size_t i = 0; i < planet_num; i++){
+					// calculate distance
+					tmp[0] = planet_coords[i][0] - r[0];
+					tmp[1] = planet_coords[i][1] - r[1];
+					tmp[2] = planet_coords[i][2] - r[2];
+
+					// calculate force
+					double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
+					double fac = G*planet_weights[i]/powf(r_norm, 3);
+					a[0] += fac*tmp[0];
+					a[1] += fac*tmp[1];
+					a[2] += fac*tmp[2];
+				}
+				// print force
+				//printf("%lf %lf %lf\n", a[0], a[1], a[2]);
+
+				// Leap Frog step
+				v[0] += a[0] / SUB_STEPS;
+				v[1] += a[1] / SUB_STEPS;
+				v[2] += a[2] / SUB_STEPS;
+				r[0] += v[0] / SUB_STEPS;
+				r[1] += v[1] / SUB_STEPS;
+				r[2] += v[2] / SUB_STEPS;
 			}
+			
+			// close planet files
+			for (size_t i = 0; i < planet_num; i++){
+				fclose(planet_files[i]);	
+			}
+
 		}
 		//dist of numerical solution to exact solution error=|r_end-r_num(t_end)|
 		double error = sqrt(powf(r[0]-r_end[0],2)+powf(r[1]-r_end[1],2)+powf(r[2]-r_end[2],2));
 		//print numbr of iterationstep and associated error
-		printf("%i. iteration: error = ", iterationcounter);
-		printf("%f AU\n",error);
+		printf("%04d. iteration: error = ", iterationcounter);
+		printf("%.10f AU\n",error);
 		fclose(trajectory_file);
 
 		//if |r_end-r_num(t_end)|<1e-6 break; and print last initial guesss of v_start
 		//else do one more iteration and repeat leap frog procedure for the new initial
 		//guess of v_start
-		if(error<1e-6){
-			printf("optimal solution found. Initital velocity is: \n");
-			printf("v_x = %f AU/day\n",v_start[0]);
-			printf("v_y = %f AU/day\n",v_start[1]);
-			printf("v_z = %f AU/day\n",v_start[2]);
+		if(error<1e-8){
+			printf("\noptimal solution found. Initital velocity is: \n");
+			printf("v = {%f, %f, %f} AU/day\n",v_start[0],v_start[1],v_start[2]);
 			break;
 		}else{
-			v_p[0] = v_start[0]-(r[0]-r_end[0])/(TMAX-TMIN);
-			v_p[1] = v_start[1]-(r[1]-r_end[1])/(TMAX-TMIN);
-			v_p[2] = v_start[2]-(r[2]-r_end[2])/(TMAX-TMIN);
+			double gain = 0.5;
+			v_p[0] = v_start[0]-gain * (r[0]-r_end[0])/(TMAX);
+			v_p[1] = v_start[1]-gain * (r[1]-r_end[1])/(TMAX);
+			v_p[2] = v_start[2]-gain * (r[2]-r_end[2])/(TMAX);
 			v_start[0] = v_p[0];
 			v_start[1] = v_p[1];
 			v_start[2] = v_p[2];
 		}
 		//if max number of iterationsteps > 100 print optimal solution not found
-		if(iterationcounter >= 100){
+		if(iterationcounter >= MAX_ITERATION){
 			printf("optimal solution not found\n");
 		}
 	}

@@ -1,16 +1,13 @@
-all:trajectory optimisation
+all:shootingmethod
 
 readPlanetList: readPlanetList.c
 	gcc -O3 $< -o $@.out
 	./$@.out
-	echo ""
 
 trajectory: trajectory.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
-	echo ""
 
-optimisation: optimisation.c
+shootingmethod: shootingmethod.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
-	echo ""
