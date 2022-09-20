@@ -31,12 +31,12 @@ int main()
 	newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	//calculate new trajectory with the new v_start values from the newtonstep
-	trajectory(v_start[0] , v_start[1] , v_start[2]);
+	trajectory(v_start[0] , v_start[1] , v_start[2], false);
 	//calculate the error
 	err = errfunction();
 	}while(err > powf(10,-14));
 
-	//trajectory(-0.009717 , 0.021646 , 0.000793);
+	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
 	
 	printf("\n found optimal values of v_start : [%lf  ,  %lf  ,  %lf]\n", v_start[0], v_start[1] , v_start[2]);
 	printf("err = %lf\n",sqrt(err));
@@ -70,7 +70,7 @@ int main()
 			for(int k = 0 ; k < stepsminus[2] + stepsplus[2] ; k++)
 			{
 				v_start[2]+=dv[2];
-				trajectory(v_start[0],v_start[1],v_start[2]);
+				trajectory(v_start[0],v_start[1],v_start[2], false);
 				double currenterr = errfunction();
 				if(currenterr < minimum[0])
 				{
@@ -104,7 +104,7 @@ int main()
 	v_start[2]-=dv[2]*maxsteps[2];
 	for(int i = 0 ; i < 3 ; i++)
 	{	
-		trajectory(v_start[0],v_start[1],v_start[2]);
+		trajectory(v_start[0],v_start[1],v_start[2], false);
 		double currenterr = errfunction(); 
 		double newcurrenterr = errfunction();
 		double stepcounter = 0;
@@ -117,7 +117,7 @@ int main()
 			}
 			currenterr = newcurrenterr;
 			v_start[i]+=dv[i];	
-			trajectory(v_start[0],v_start[1],v_start[2]);
+			trajectory(v_start[0],v_start[1],v_start[2], false);
 			newcurrenterr = errfunction(); 
 			stepcounter++;
 		}while(newcurrenterr <= currenterr);

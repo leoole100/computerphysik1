@@ -11,5 +11,5 @@
 #include "methods.h"
 
 int main(){
-	trajectory(v_start[0],v_start[1],v_start[2]);	
+	trajectory(v_start[0],v_start[1],v_start[2], true);	
 }

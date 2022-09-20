@@ -33,7 +33,8 @@ int main(){
 			for(int k = 0 ; k < stepsminus[2] + stepsplus[2] ; k++)
 			{
 				v_start[2]+=dv[2];
-				double currenterr = fast_trajectory(v_start[0],v_start[1],v_start[2]);
+				trajectory(v_start[0],v_start[1],v_start[2], false);
+				double currenterr = errfunction();
 				fprintf(results_file, "%.10f %.10f %.10f %g \n", v_start[0], v_start[1], v_start[2], currenterr);
 			}
 			v_start[2]-=(stepsminus[2] + stepsplus[2])*dv[2];

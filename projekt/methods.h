@@ -12,6 +12,7 @@
 #include <dirent.h> 
 #include <unistd.h>
 #include <math.h>
+#include <stdbool.h> // why isn't this in c?
 #include "setup.h"
 
 
@@ -38,7 +39,7 @@ void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 double errorfunction();
 void makeJacobian();
 void newtonstep();
-
+void trajectory(double v_x , double v_y , double v_z, bool save);
 
 
 
@@ -114,13 +115,15 @@ void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files){
  * @param v_x 
  * @param v_y 
  * @param v_z 
+ * @param save specify if the trajectory should be saved
  * 
  * @author Leon Oleschko
  */
-void trajectory(double v_x , double v_y , double v_z )
+void trajectory(double v_x , double v_y , double v_z, bool save)
 {	
-    
-		FILE * trajectory_file = fopen("data/trajectory.dat", "w+");
+		FILE * trajectory_file;
+
+		if(save){ trajectory_file = fopen("data/trajectory.dat", "w+"); }
 
 		// count number of planets
 		__uint8_t planet_num = getPlanetNumber();
@@ -151,7 +154,7 @@ void trajectory(double v_x , double v_y , double v_z )
 		for(int day = 0; day < TMAX; day++){
 
 			// save current position
-			fprintf(trajectory_file, "%g ,%g, %g\n", r[0], r[1], r[2]);
+			if(save){ fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]); }
 
 			// get planet positions 
 			for (size_t i = 0; i < planet_num; i++){
@@ -201,7 +204,7 @@ void trajectory(double v_x , double v_y , double v_z )
 			for (size_t i = 0; i < planet_num; i++){
 				fclose(planet_files[i]);
 			}
-            fclose(trajectory_file);
+            if(save){ fclose(trajectory_file);}
 			
 }
 
@@ -282,7 +285,7 @@ void calcJacobian()
 	{
 		
 		v_start[j]+=h;
-		trajectory(v_start[0],v_start[1],v_start[2]);
+		trajectory(v_start[0],v_start[1],v_start[2], false);
 		err = errfunction(v[0],v[1],v[2],r[0],r[1],r[2]);
 		for(int i = 0 ;  i < 3 ; i++)
 		{
@@ -290,7 +293,7 @@ void calcJacobian()
 		}
 		v_start[j]-=h;
 
-		trajectory(v_start[0],v_start[1],v_start[2]);
+		trajectory(v_start[0],v_start[1],v_start[2], false);
 		err = errfunction(v[0],v[1],v[2],r[0],r[1],r[2]);
 		for(int i = 0 ; i < 3 ; i++)
 		{
@@ -374,7 +377,7 @@ void newtonstep()
 	v_start[2]+=deltav_n[2];
 
 	//solve boundary value problem with new initial velocity
-	trajectory(v_start[0],v_start[1],v_start[2]);
+	trajectory(v_start[0],v_start[1],v_start[2], false);
 	printf("%d. iteration : v_start = [%lf , %lf , %lf]\n", newtoniterationnumber,v_start[0],v_start[1],v_start[2]);
 }
 

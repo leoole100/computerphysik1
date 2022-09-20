@@ -12,7 +12,7 @@
 */
 #define PLANET_PATH "data/planets/"
 #define TMAX 800 // in days
-#define SUB_STEPS 1e3
+#define SUB_STEPS 1e1
 #define h 0.0000001 //constant needed for calculation of difference qoutioent f'(x)=(f(x+h)-f(x))/h
 #define G  1.488e-34 // in AU^3 / kg day^2
 #define maxnewtonsteps 25
@@ -31,6 +31,6 @@ double r_end[3] = {-4.62083867637899, 1.63724477946744 , -1.33560490377459};//at
 double v_end[3] = {0.002853729 , -0.00191825 , -0.00460521};//at day 800
 
 //initial guess of velocity, size that needs to be optimized
-//double v_start[3] = {-0.002976 , 0.020794 , -0.007324}; //at day 10
+//double v_start[3] = {-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
 double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; //manually found value for swing by
 
