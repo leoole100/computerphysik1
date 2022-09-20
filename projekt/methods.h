@@ -1,19 +1,56 @@
+/**
+ * @file methods.h
+ * @brief Commonly used methods
+ * @version 0.1
+ * @date 2022-09-20
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h> 
 #include <unistd.h>
 #include <math.h>
-#include "initialvalues.h"
+#include "setup.h"
 
 
+// global variables in the heap  ///////////////////////////////////////////////////////////////////////////
+//deviation of the numerical solution from the boundary conditions 
+double err = 0;
+//arrays for calculated values on the given grid
+double r[3];
+double v[3];
+double v_p[3];
+double a[3]; // force on spacecraft divided by mass
+double tmp[3];
+//Jacobian matrix of the errorfunction 
+double Jacobian[3][3];
+//counter of the newton steps
+int newtoniterationnumber = 1;
+//vector to store the deviation of the numerical solution from the boundary conditions
+double errvec[3];
+
+
+// structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 double errorfunction();
 void makeJacobian();
 void newtonstep();
 
-// get the number of files in the planets directory
+
+
+
+// functions  //////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Get the number of files in the PLANET_PATH
+ * 
+ * @return __uint8_t 
+ * 
+ * @author Leon Oleschko
+ */
 __uint8_t getPlanetNumber(){
 	__uint8_t planet_num = 0;
 
@@ -35,7 +72,14 @@ __uint8_t getPlanetNumber(){
 	return planet_num;
 }
 
-// open all planet files
+/**
+ * @brief open files to file array
+ * 
+ * @param planet_num 
+ * @param planet_files 
+ * 
+ * @author Leon Oleschko
+ */
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files){
 	// get file names
 	DIR *d = opendir(PLANET_PATH);
@@ -64,7 +108,15 @@ void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files){
 	closedir(d);
 }	
 
-
+/**
+ * @brief simulates the trajectory from start to TMAX
+ * 
+ * @param v_x 
+ * @param v_y 
+ * @param v_z 
+ * 
+ * @author Leon Oleschko
+ */
 void trajectory(double v_x , double v_y , double v_z )
 {	
     
@@ -153,7 +205,11 @@ void trajectory(double v_x , double v_y , double v_z )
 			
 }
 
-
+/**
+ * @brief returns the value for the error function at the global x and v
+ * 
+ * @return double 
+ */
 double errfunction()
 {
 	/*
@@ -168,7 +224,7 @@ double errfunction()
 		abserr : double
 		absolute value of the errorvector
 
-————————————————————————————————————————————————
+	————————————————————————————————————————————————
 	*/
 		//1.Fehlerfunktion nur Ortskoordinaten
 		/*
@@ -196,6 +252,11 @@ double errfunction()
 	return abserr;
 }
 
+/**
+ * @brief 
+ * 
+ * @author Moritz Schroer
+ */
 void calcJacobian()
 {	
 	/*
@@ -214,7 +275,7 @@ void calcJacobian()
 	outputs :
 		None
 
-————————————————————————————————————————————————
+	————————————————————————————————————————————————
 	*/
 
 	for(int j = 0 ; j < 3 ; j++ )
@@ -240,6 +301,11 @@ void calcJacobian()
 	}
 }
 
+/**
+ * @brief 
+ * 
+ * @author Moritz Schroer
+ */
 void newtonstep()
 {
 	/*
@@ -260,8 +326,8 @@ void newtonstep()
 	outputs:
 		None
 
-—————————————————————————————————————————————————-
-*/
+	—————————————————————————————————————————————————-
+	*/
 	
 	
 	//delta_s vector to solve the linear system of equation with Jacobi iteration method

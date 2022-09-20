@@ -4,6 +4,8 @@
  * @version 0.1
  * @date 2022-09-10
  * 
+ * @author Moritz Schroer
+ * 
  */
 
 #include <stdio.h>

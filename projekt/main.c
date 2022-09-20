@@ -1,3 +1,13 @@
+/**
+ * @file main.c
+ * @brief 
+ * @version 0.1
+ * @date 2022-09-20
+ * 
+ * @author Moritz Schroer
+ * 
+ */
+
 #include "methods.h"
 
 int main()
@@ -6,7 +16,7 @@ int main()
 	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
 	printf("begin main\n");
 	
-	
+	__uint32_t newtoniterationnumber = 1
 	
 	//1. Methode: shootingmethode mit Newton-Raphson Verfahren
 	/*
@@ -18,7 +28,7 @@ int main()
 		printf("\n error couldn't find optimal solution\n");
 		exit(0);
 	}
-	newtonstep();
+	newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	//calculate new trajectory with the new v_start values from the newtonstep
 	trajectory(v_start[0] , v_start[1] , v_start[2]);
