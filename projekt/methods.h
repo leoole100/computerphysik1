@@ -115,7 +115,7 @@ void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files){
  * @param v_x 
  * @param v_y 
  * @param v_z 
- * @param save specify if the trajectory should be saved
+ * @param save specify if the trajectory should be saved, will run to TMAX
  * 
  * @author Leon Oleschko
  */
@@ -142,14 +142,17 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 
 		double planet_coords[planet_num][3];
 
-            //initialize boundaryvalues at TMIN
-			r[0]=r_start[0];
-			r[1]=r_start[1];
-			r[2]=r_start[2];
-			v[0] = v_x;
-			v[1] = v_y;
-			v[2] = v_z;
-			
+		//initialize boundaryvalues at TMIN
+		r[0] = r_start[0];
+		r[1] = r_start[1];
+		r[2] = r_start[2];
+		v[0] = v_x;
+		v[1] = v_y;
+		v[2] = v_z;
+
+		// save dist to check for overrun
+		//double old_dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
+		
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
 
@@ -197,14 +200,24 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 				r[2] += v[2] / SUB_STEPS;
 			}
 			//printf("x_koordinate %f\n", planet_coords[1][0]);
+
+			// check if r_end overrun
+			/*double dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
+			if(!save && old_dist_squared > dist_squared){
+				old_dist_squared = dist_squared;
+			}
+			else {
+				return;
+			}*/
+
 			
-			}
-			//printf("closing files\n");	
-			// close planet files
-			for (size_t i = 0; i < planet_num; i++){
-				fclose(planet_files[i]);
-			}
-            if(save){ fclose(trajectory_file);}
+		}
+		//printf("closing files\n");	
+		// close planet files
+		for (size_t i = 0; i < planet_num; i++){
+			fclose(planet_files[i]);
+		}
+		if(save){ fclose(trajectory_file);}
 			
 }
 
@@ -246,12 +259,12 @@ double errfunction()
 		//3.Fehlerfunktio Ort und Impuls kombiniert
 		
 		//Wahl der Fehlerfunktion ist eventuell noch nicht optimal, kann man noch ein bischen rumprobieren
-		errvec[0] = 0.000002*(v_end[0]-v[0])+0.0000008*(r_end[0]-r[0]);
-		errvec[1] = 0.000002*(v_end[1]-v[1])+0.0000008*(r_end[1]-r[1]);
-		errvec[2] = 0.000002*(v_end[2]-v[2])+0.0000008*(r_end[2]-r[2]);
+		errvec[0] = 0.000002*powf(v_end[0]-v[0],2)+0.0000008*powf(r_end[0]-r[0],2);
+		errvec[1] = 0.000002*powf(v_end[1]-v[1],2)+0.0000008*powf(r_end[1]-r[1],2);
+		errvec[2] = 0.000002*powf(v_end[2]-v[2],2)+0.0000008*powf(r_end[2]-r[2],2);
 		
 
-	double abserr = sqrt(powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2));
+	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
 	return abserr;
 }
 
