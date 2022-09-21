@@ -12,7 +12,7 @@
 */
 #define PLANET_PATH "data/planets/"
 #define TMAX 519 // in days // historic travel time
-//#define TMAX 1000 // for plots
+//#define TMAX 900 // for plots
 #define SUB_STEPS 1e1
 #define h 0.0000001 //constant needed for calculation of difference qoutioent f'(x)=(f(x+h)-f(x))/h
 #define G  1.488e-34 // in AU^3 / kg day^2
@@ -25,17 +25,19 @@
 */
 
 //boundary conditions of the location:
-double r_start[3]={0.892490713706592,0.446536028000082,0.008360720388102};//at day10
-double r_end[3] = {-4.62083867637899, 1.63724477946744 , -1.33560490377459};//at day 810
+double r_start[3]={0.9018647801517535, 0.4249622724991888, 0.007482330796928186}; // at day 10
+double r_end[3] = {-4.99443408522095, 2.0463303553843777, -0.08102002848437442}; // at day 519+10
 
 //boundary condition of the velocity: 
-double v_end[3] = {0.002853729 , -0.00191825 , -0.00460521};//at day 800
+double v_end[3] = {-0.00028974465364584034, -0.000899297755505124, -0.004710081570797581}; // at day 519+10
 
 //initial guess of velocity, size that needs to be optimized
-//double v_start[3] = {-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
+double v_start[3] ={-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
 //double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; //manually found value for swing by
-double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; // found with grid search
+//double v_start[3] = { -0.009845, 0.021695, 0.000785 }; // found with grid search
 /*
 { -0.009639, 0.021619, 0.000799 }
+
+ { -0.009845, 0.021695, 0.000785 }
  */
 

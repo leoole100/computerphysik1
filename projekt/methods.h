@@ -140,7 +140,14 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 			//printf("	%g\n", planet_weights[i]);
 		}
 
-		double planet_coords[planet_num][3];
+		double planet_coords[planet_num][3], planet_coords_current[planet_num][3], planet_coords_next[planet_num][3];
+		// get planet positions 
+		for (size_t i = 0; i < planet_num; i++){
+			for (size_t j = 0; j < 3; j++){
+				fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
+				//printf("	%lf\n", planet_coords[i][j]);
+			}
+		}
 
 		//initialize boundaryvalues at TMIN
 		r[0] = r_start[0];
@@ -159,10 +166,18 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 			// save current position
 			if(save){ fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]); }
 
+
+			// save current planet positions
+			for (size_t i = 0; i < planet_num; i++){
+				for (size_t j = 0; j < 3; j++){
+					planet_coords_current[i][j] = planet_coords_next[i][j];
+				}
+			}
+
 			// get planet positions 
 			for (size_t i = 0; i < planet_num; i++){
 				for (size_t j = 0; j < 3; j++){
-					fscanf(planet_files[i], "%lf", &planet_coords[i][j]);
+					fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
 					//printf("	%lf\n", planet_coords[i][j]);
 				}
 			}
@@ -173,6 +188,14 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 				a[0] = 0;
 				a[1] = 0;
 				a[2] = 0;
+
+				// calculate interpolated position of planets
+				for (size_t i = 0; i < planet_num; i++){
+					// calculate interpolated position
+					for (size_t j = 0; j < 3; j++){
+						planet_coords[i][j] = planet_coords_current[i][j] + (planet_coords_next[i][j] - planet_coords_current[i][j]) * (double)sub_step / (double)SUB_STEPS;
+					}
+				}
 
 				// calculate force on spacecraft
 				for (size_t i = 0; i < planet_num; i++){

@@ -19,8 +19,8 @@ int main(){
 	double best_error = 1e6;
 
 	//double d = 0.000000001; //stepsize
-	double dv = 0.00003; //stepsize
-	double step_plus[3] = {15 , 15 , 15};
+	double dv = 0.0001; //stepsize
+	double step_plus[3] = {30 , 30 , 30};
 
 	double step_minus[3];
 	step_minus[0] = step_plus[0];

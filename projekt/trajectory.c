@@ -11,5 +11,11 @@
 #include "methods.h"
 
 int main(){
+
+	/*v_start[0] *= 1.03;
+	v_start[1] *= 1.004;
+	v_start[2] *= 0.92;*/
+
+
 	trajectory(v_start[0],v_start[1],v_start[2], true);	
 }

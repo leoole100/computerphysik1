@@ -16,3 +16,8 @@ main: main.c
 gridSearch: gridSearch.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
+
+
+gridSearchMultithreading: gridSearchMultithreading.c
+	gcc -O3 $< -o $@.out -lm
+	./$@.out
