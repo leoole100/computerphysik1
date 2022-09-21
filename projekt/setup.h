@@ -11,8 +11,8 @@
 ------------------------------------------
 */
 #define PLANET_PATH "data/planets/"
-//#define TMAX 519 // in days // historic travel time
-#define TMAX 900 // for plots
+#define TMAX 519 // in days // historic travel time
+//#define TMAX 1900 // for plots
 #define SUB_STEPS 1e1
 #define h 0.0000001 //constant needed for calculation of difference qoutioent f'(x)=(f(x+h)-f(x))/h
 #define G  1.488e-34 // in AU^3 / kg day^2
