@@ -11,12 +11,14 @@
 #include "methods.h"
 #include <pthread.h>
 
-#define NUM_THREADS 6
+#define NUM_THREADS 10
 
 void *thread(void *arg);
 
-double dv = 0.0000001; //stepsize
-double step_plus[3] = {40 , 20 , 10};
+double dv = 1e-6; //stepsize
+//double step_plus[3] = {40 , 20 , 10};
+double step_plus[3] = {20 , 20 , 10};
+
 double step_minus[3];
 
 int main(){

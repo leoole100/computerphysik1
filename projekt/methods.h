@@ -292,9 +292,9 @@ double errfunction(double (*r)[3], double (*v)[3])
 		//3.Fehlerfunktio Ort und Impuls kombiniert
 		
 		//Wahl der Fehlerfunktion ist eventuell noch nicht optimal, kann man noch ein bischen rumprobieren
-		errvec[0] = 0.000002*powf(v_end[0]-(*v)[0],2)+0.0000008*powf(r_end[0]-(*r)[0],2);
-		errvec[1] = 0.000002*powf(v_end[1]-(*v)[1],2)+0.0000008*powf(r_end[1]-(*r)[1],2);
-		errvec[2] = 0.000002*powf(v_end[2]-(*v)[2],2)+0.0000008*powf(r_end[2]-(*r)[2],2);
+		errvec[0] = 0.000002*powf(v_end[0]-(*v)[0],4)+0.0000008*powf(r_end[0]-(*r)[0],2);
+		errvec[1] = 0.000002*powf(v_end[1]-(*v)[1],4)+0.0000008*powf(r_end[1]-(*r)[1],2);
+		errvec[2] = 0.000002*powf(v_end[2]-(*v)[2],4)+0.0000008*powf(r_end[2]-(*r)[2],2);
 		
 
 	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);

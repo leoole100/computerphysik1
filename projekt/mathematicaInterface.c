@@ -27,17 +27,15 @@ DLLEXPORT int mathematicaTrajectoryError(WolframLibraryData libData, mint Argc, 
 	v_start[1] = MArgument_getReal(Args[1]);
 	v_start[2] = MArgument_getReal(Args[2]);
 
-	trajectory(v_start[0],v_start[1],v_start[2], false);
+	result = trajectory(&v_start, false);
 	
-	result = errfunction();
-
 	MArgument_setReal(Res,result);
 	return LIBRARY_NO_ERROR;
 }
 
 
 /**
- * @brief returns the evalated error function
+ * @brief returns the evaluated error function
  * 
  * @param libData 
  * @param Argc 
@@ -48,6 +46,9 @@ DLLEXPORT int mathematicaTrajectoryError(WolframLibraryData libData, mint Argc, 
 DLLEXPORT int mathematicaErrorFunction(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument Res) {
 	mreal v_start_param[3];
 	mreal result;
+
+	double r[3], v[3];
+
 	r[0] = MArgument_getReal(Args[0]);
 	r[1] = MArgument_getReal(Args[1]);
 	r[2] = MArgument_getReal(Args[2]);
@@ -55,7 +56,7 @@ DLLEXPORT int mathematicaErrorFunction(WolframLibraryData libData, mint Argc, MA
 	v[1] = MArgument_getReal(Args[4]);
 	v[2] = MArgument_getReal(Args[5]);
 	
-	result = errfunction();
+	result = errfunction(&r, &v);
 
 	MArgument_setReal(Res,result);
 	return LIBRARY_NO_ERROR;
