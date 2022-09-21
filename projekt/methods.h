@@ -19,12 +19,6 @@
 // global variables in the heap  ///////////////////////////////////////////////////////////////////////////
 //deviation of the numerical solution from the boundary conditions 
 double err = 0;
-//arrays for calculated values on the given grid
-double r[3];
-double v[3];
-double v_p[3];
-double a[3]; // force on spacecraft divided by mass
-double tmp[3];
 //Jacobian matrix of the errorfunction 
 double Jacobian[3][3];
 //counter of the newton steps
@@ -36,10 +30,10 @@ double errvec[3];
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
-double errorfunction();
+double errfunction(double (*r)[3], double (*v)[3]);
 void makeJacobian();
 void newtonstep();
-void trajectory(double v_x , double v_y , double v_z, bool save);
+double trajectory(double (*v_p)[3],  bool save);
 
 
 
@@ -119,7 +113,17 @@ void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files){
  * 
  * @author Leon Oleschko
  */
-void trajectory(double v_x , double v_y , double v_z, bool save)
+
+/**
+ * @brief simulates the trajectory from start to TMAX
+ * 
+ * @param v_p 
+ * @param save specify if the trajectory should be saved, will run to TMAX
+ * @return double error function at TMAX
+ * 
+ * @author Leon Oleschko
+ */
+double trajectory(double (*v_p)[3],  bool save)
 {	
 		FILE * trajectory_file;
 
@@ -140,8 +144,8 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 			//printf("	%g\n", planet_weights[i]);
 		}
 
+		// read planet positions
 		double planet_coords[planet_num][3], planet_coords_current[planet_num][3], planet_coords_next[planet_num][3];
-		// get planet positions 
 		for (size_t i = 0; i < planet_num; i++){
 			for (size_t j = 0; j < 3; j++){
 				fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
@@ -149,13 +153,15 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 			}
 		}
 
+		double r[3], v[3], a[3], tmp[3];
+
 		//initialize boundaryvalues at TMIN
 		r[0] = r_start[0];
 		r[1] = r_start[1];
 		r[2] = r_start[2];
-		v[0] = v_x;
-		v[1] = v_y;
-		v[2] = v_z;
+		v[0] = (*v_p)[0];
+		v[1] = (*v_p)[1];
+		v[2] = (*v_p)[2];
 
 		// save dist to check for overrun
 		//double old_dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
@@ -241,15 +247,19 @@ void trajectory(double v_x , double v_y , double v_z, bool save)
 			fclose(planet_files[i]);
 		}
 		if(save){ fclose(trajectory_file);}
+
+		return(errfunction(&r, &v));
 			
 }
 
 /**
- * @brief returns the value for the error function at the global x and v
+ * @brief returns the value for the error function
  * 
+ * @param r 
+ * @param v 
  * @return double 
  */
-double errfunction()
+double errfunction(double (*r)[3], double (*v)[3])
 {
 	/*
 	valculates errorvector:
@@ -282,9 +292,9 @@ double errfunction()
 		//3.Fehlerfunktio Ort und Impuls kombiniert
 		
 		//Wahl der Fehlerfunktion ist eventuell noch nicht optimal, kann man noch ein bischen rumprobieren
-		errvec[0] = 0.000002*powf(v_end[0]-v[0],2)+0.0000008*powf(r_end[0]-r[0],2);
-		errvec[1] = 0.000002*powf(v_end[1]-v[1],2)+0.0000008*powf(r_end[1]-r[1],2);
-		errvec[2] = 0.000002*powf(v_end[2]-v[2],2)+0.0000008*powf(r_end[2]-r[2],2);
+		errvec[0] = 0.000002*powf(v_end[0]-(*v)[0],2)+0.0000008*powf(r_end[0]-(*r)[0],2);
+		errvec[1] = 0.000002*powf(v_end[1]-(*v)[1],2)+0.0000008*powf(r_end[1]-(*r)[1],2);
+		errvec[2] = 0.000002*powf(v_end[2]-(*v)[2],2)+0.0000008*powf(r_end[2]-(*r)[2],2);
 		
 
 	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
@@ -321,16 +331,14 @@ void calcJacobian()
 	{
 		
 		v_start[j]+=h;
-		trajectory(v_start[0],v_start[1],v_start[2], false);
-		err = errfunction(v[0],v[1],v[2],r[0],r[1],r[2]);
+		err = trajectory(&v_start, false);
 		for(int i = 0 ;  i < 3 ; i++)
 		{
 			Jacobian[i][j]=errvec[i];
 		}
 		v_start[j]-=h;
 
-		trajectory(v_start[0],v_start[1],v_start[2], false);
-		err = errfunction(v[0],v[1],v[2],r[0],r[1],r[2]);
+		err = trajectory(&v_start, false);
 		for(int i = 0 ; i < 3 ; i++)
 		{
 			Jacobian[i][j]-=errvec[i];
@@ -413,7 +421,7 @@ void newtonstep()
 	v_start[2]+=deltav_n[2];
 
 	//solve boundary value problem with new initial velocity
-	trajectory(v_start[0],v_start[1],v_start[2], false);
+	trajectory(&v_start, true);
 	printf("%d. iteration : v_start = [%lf , %lf , %lf]\n", newtoniterationnumber,v_start[0],v_start[1],v_start[2]);
 }
 

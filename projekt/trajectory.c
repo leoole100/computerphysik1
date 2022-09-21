@@ -17,5 +17,5 @@ int main(){
 	v_start[2] *= 0.92;*/
 
 
-	trajectory(v_start[0],v_start[1],v_start[2], true);	
+	trajectory(&v_start, true);	
 }

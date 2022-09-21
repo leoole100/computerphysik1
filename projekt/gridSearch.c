@@ -20,7 +20,7 @@ int main(){
 
 	//double d = 0.000000001; //stepsize
 	double dv = 0.0001; //stepsize
-	double step_plus[3] = {30 , 30 , 30};
+	double step_plus[3] = {10 , 10 , 10};
 
 	double step_minus[3];
 	step_minus[0] = step_plus[0];
@@ -41,8 +41,7 @@ int main(){
 			for(int k = 0 ; k < step_minus[2] + step_plus[2] ; k++)
 			{
 				v_start[2]+=dv;
-				trajectory(v_start[0],v_start[1],v_start[2], false);
-				double currenterr = errfunction();
+				double currenterr = trajectory(&v_start, false);
 				fprintf(results_file, "%.10f %.10f %.10f %g \n", v_start[0], v_start[1], v_start[2], currenterr);
 				if(currenterr < best_error){
 					v_best[0] = v_start[0];
@@ -65,7 +64,7 @@ int main(){
 	fclose(results_file);
 
 	printf("creating trajectory\n");
-	trajectory( v_best[0], v_best[1], v_best[2], true);
+	trajectory( &v_best, true);
 
 	return 0;
 }
