@@ -16,10 +16,10 @@ int main()
 	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
 	printf("begin main\n");
 	
-	__uint32_t newtoniterationnumber = 1
+	__uint32_t newtoniterationnumber = 1;
 	
 	//1. Methode: shootingmethode mit Newton-Raphson Verfahren
-	/*
+	
 	printf("begin Newtoniteration\n");
 	do{
 	//if maximum number of newtonsteps is reached exit program and display error message
@@ -31,16 +31,14 @@ int main()
 	newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	//calculate new trajectory with the new v_start values from the newtonstep
-	trajectory(v_start[0] , v_start[1] , v_start[2], false);
-	//calculate the error
-	err = errfunction();
-	}while(err > powf(10,-14));
+	err = trajectory(&v_start, false);
+	}while(err > powf(10,-28));
 
 	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
 	
-	printf("\n found optimal values of v_start : [%lf  ,  %lf  ,  %lf]\n", v_start[0], v_start[1] , v_start[2]);
+	printf("\n found optimal values of v_start : {%lf  ,  %lf  ,  %lf}\n", v_start[0], v_start[1] , v_start[2]);
 	printf("err = %lf\n",sqrt(err));
-    */
+    
 
 
 

@@ -11,7 +11,6 @@ shootingmethod: shootingmethod.c
 main: main.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
-	echo ""
 
 gridSearch: gridSearch.c
 	gcc -O3 $< -o $@.out -lm

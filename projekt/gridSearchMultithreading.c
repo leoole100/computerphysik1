@@ -15,9 +15,9 @@
 
 void *thread(void *arg);
 
-double dv = 1e-6; //stepsize
-//double step_plus[3] = {40 , 20 , 10};
-double step_plus[3] = {20 , 20 , 10};
+double dv = 1e-5; //stepsize
+double step_plus[3] = {50 , 30 , 10};
+//double step_plus[3] = {20 , 20 , 10};
 
 double step_minus[3];
 
@@ -26,6 +26,8 @@ int main(){
 	step_minus[0] = step_plus[0];
 	step_minus[1] = step_plus[1];
 	step_minus[2] = step_plus[2];
+
+	printf("%g grid points in %d threads\n", (step_minus[0] + step_plus[0])*(step_minus[1] + step_plus[1])*(step_minus[2] + step_plus[2]), NUM_THREADS);
 
 	int thread_args[NUM_THREADS];
 	pthread_t threads[NUM_THREADS];
@@ -50,7 +52,7 @@ void *thread(void *arg){
 	// exporting
 	char filename[210];
 	snprintf(filename, 22, "data/gridSearch%02d.dat", n);
-	printf("saving in: %s\n", filename);
+	printf("	saving in: %s\n", filename);
 	FILE * results_file = fopen(filename, "w+");
 
 	double v[3];
@@ -81,5 +83,7 @@ void *thread(void *arg){
 	}
 
 	fclose(results_file);
+
+	printf("	thread %d finished\n", n);
 	return 0;
 }
