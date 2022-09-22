@@ -167,7 +167,7 @@ double trajectory(double (*v_p)[3],  bool save)
 		for(int day = 0; day < TMAX; day++){
 
 			// save current position
-			if(save){ fprintf(trajectory_file, "%g , %g , %g\n", r[0], r[1], r[2]); }
+			if(save){ fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]); }
 
 
 			// save current planet positions
