@@ -124,7 +124,7 @@ double trajectory(double (*v_p)[3],  bool save)
 {	
 		FILE * trajectory_file;
 
-		if(save){ trajectory_file = fopen("data/trajectory.csv", "w+"); }
+		if(save){ trajectory_file = fopen("data/trajectory.dat", "w+"); }
 
 		// count number of planets
 		__uint8_t planet_num = getPlanetNumber();
@@ -291,7 +291,6 @@ double errfunction(double (*r)[3][3], double (*v)[3][3])
 			for(int j = 0 ; j < 3 ; j++)
 			{
 			errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
-			//errvec[i] += (5e-3*weightdays[j]*weightkomponents[i]*(r_end[j][i]-(*r)[j][i]));
 			}
 		}
 		
