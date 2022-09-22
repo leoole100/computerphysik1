@@ -32,7 +32,7 @@ int main()
 	err = newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	
-	}while(err > powf(10,-14));
+	}while(err > powf(10,-12));
 
 	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
 	
