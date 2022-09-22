@@ -389,13 +389,13 @@ void newtonstep( int newtoniterationnumber)
 	
 	
 	//delta_s vector to solve the linear system of equation with Jacobi iteration method
-	double deltav_n[3] = {-0.000001 , -0.000001 , -0.000001};
-	double deltav_np[3] = {0 , 0 , 0}; 
+	double deltav_n[3] = {0 , 0 , 0};
+	//double deltav_np[3] = {0 , 0 , 0}; 
 	//sles := Derr*deltas, if | sles- |^2 < 1e-7 break; because linear equation system is solved.
 	
 	//calculate Jacobian Matrix Derr of the errorfunction
 	calcJacobian();
-	
+	/*
 	double abserrles;
 	//initial guess of the solution of the linear system of equations
 	
@@ -431,6 +431,35 @@ void newtonstep( int newtoniterationnumber)
 			exit(0);
 		}
 	}while(abserrles > powf(10,-7));
+	*/
+	
+	//calculate det(Jacobian)
+	double det = Jacobian[0][0]*Jacobian[1][1]*Jacobian[2][2]+Jacobian[0][1]*Jacobian[1][2]*Jacobian[2][0]+Jacobian[0][2]*Jacobian[1][0]*Jacobian[2][1]
+        -Jacobian[0][2]*Jacobian[1][1]*Jacobian[2][0]-Jacobian[0][0]*Jacobian[1][2]*Jacobian[2][1]-Jacobian[0][1]*Jacobian[1][0]*Jacobian[2][2];
+        
+  		
+
+	//calculate inverse of Jacobian
+        double inverse[3][3];
+        inverse[0][0]=1/det*(Jacobian[1][1]*Jacobian[2][2]-Jacobian[1][2]*Jacobian[2][1]);
+        inverse[0][1]=1/det*(Jacobian[0][2]*Jacobian[2][1]-Jacobian[0][1]*Jacobian[2][2]);
+        inverse[0][2]=1/det*(Jacobian[0][1]*Jacobian[1][2]-Jacobian[0][2]*Jacobian[1][1]);
+
+        inverse[1][0]=1/det*(Jacobian[1][2]*Jacobian[2][0]-Jacobian[1][0]*Jacobian[2][2]);
+        inverse[1][1]=1/det*(Jacobian[0][0]*Jacobian[2][2]-Jacobian[0][2]*Jacobian[2][0]);
+        inverse[1][2]=1/det*(Jacobian[0][2]*Jacobian[1][0]-Jacobian[0][0]*Jacobian[1][2]);
+        
+        inverse[2][0]=1/det*(Jacobian[1][0]*Jacobian[2][1]-Jacobian[1][1]*Jacobian[2][0]);
+        inverse[2][1]=1/det*(Jacobian[0][1]*Jacobian[2][0]-Jacobian[0][0]*Jacobian[2][1]);
+        inverse[2][2]=1/det*(Jacobian[0][0]*Jacobian[1][1]-Jacobian[0][1]*Jacobian[1][0]);
+
+        for(int i = 0 ; i < 3 ; i++)
+        {
+            for(int j = 0 ; j < 3 ; j++)
+            {
+                deltav_n[i]+=inverse[i][j]*errvec[j];
+            }
+        }
 
 	//after linear equation system is solved set v_start^(n+1) = v_start^(n) + deltav_n
 	double gain = 1e-3;
