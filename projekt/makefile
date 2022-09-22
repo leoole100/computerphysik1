@@ -20,3 +20,7 @@ gridSearch: gridSearch.c
 gridSearchMultithreading: gridSearchMultithreading.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
+	
+mainMitNewton: mainMitNewton.c
+	gcc -O3 $< -o $@.out -lm
+	./$@.out
