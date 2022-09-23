@@ -140,7 +140,10 @@ double trajectory(double (*v_p)[3],  bool save)
 		//printf("Planet weights:\n");
 		double planet_weights[planet_num];
 		for (size_t i = 0; i < planet_num; i++){
-			fscanf(planet_files[i], "%lf", &planet_weights[i]);
+			if(fscanf(planet_files[i], "%lf", &planet_weights[i])==0){
+				perror("fscanf");
+				exit(EXIT_FAILURE);
+			}
 			//printf("	%g\n", planet_weights[i]);
 		}
 
@@ -148,7 +151,10 @@ double trajectory(double (*v_p)[3],  bool save)
 		double planet_coords[planet_num][3], planet_coords_current[planet_num][3], planet_coords_next[planet_num][3];
 		for (size_t i = 0; i < planet_num; i++){
 			for (size_t j = 0; j < 3; j++){
-				fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
+				if(fscanf(planet_files[i], "%lf", &planet_coords_next[i][j])==0){
+					perror("fscanf");
+					exit(EXIT_FAILURE);
+				}
 				//printf("	%lf\n", planet_coords[i][j]);
 			}
 		}
@@ -184,7 +190,10 @@ double trajectory(double (*v_p)[3],  bool save)
 			// get planet positions 
 			for (size_t i = 0; i < planet_num; i++){
 				for (size_t j = 0; j < 3; j++){
-					fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
+					if(fscanf(planet_files[i], "%lf", &planet_coords_next[i][j])==0){
+						perror("fscanf");
+						exit(EXIT_FAILURE);
+					}
 					//printf("	%lf\n", planet_coords[i][j]);
 				}
 			}
@@ -250,16 +259,15 @@ double trajectory(double (*v_p)[3],  bool save)
 		}
 		if(save){ fclose(trajectory_file);}
 
-		return(errfunction(&r, &v));
+		//return(errfunction(&r, &v));
 
 		// sum closest distances to checkpoints
-		/*double err = 0;
+		double err = 0;
 		for (size_t i = 0; i < CHECKPOINTS; i++){
 			err += closest_checkpoint_dist[i];
 		}
 
-		return err;*/
-			
+		return err;
 }
 
 /**
@@ -400,7 +408,6 @@ void newtonstep( int newtoniterationnumber)
 	//initial guess of the solution of the linear system of equations
 	
 	do{				
-
 		//do Jacobi step
 		deltav_np[0] = (-errvec[0]-Jacobian[0][1]*deltav_n[1]-Jacobian[0][2]*deltav_n[2])/Jacobian[0][0]; 
 		deltav_np[1] = (-errvec[1]-Jacobian[1][0]*deltav_n[0]-Jacobian[1][2]*deltav_n[2])/Jacobian[1][1]; 
@@ -422,13 +429,11 @@ void newtonstep( int newtoniterationnumber)
 		abserrles = sqrt(pow(sles[0]+errvec[0],2)+pow(sles[1]+errvec[1],2)+pow(sles[2]+errvec[2],2));
 
 
-		printf("%g\n",  abserrles);
-		
 		//check if abserrless is finte else exit programm and display error message
 		if(isinf(abserrles) || isnan(abserrles))
 		{
 			printf("error couldnt perform Newtonstep abserror exceeds limits\n");
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 	}while(abserrles > powf(10,-7));
 

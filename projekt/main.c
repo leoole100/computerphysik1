@@ -22,16 +22,16 @@ int main()
 	
 	printf("begin Newtoniteration\n");
 	do{
-	//if maximum number of newtonsteps is reached exit program and display error message
-	if(newtoniterationnumber > maxnewtonsteps)
-	{
-		printf("\n error couldn't find optimal solution\n");
-		exit(0);
-	}
-	newtonstep(newtoniterationnumber);
-	newtoniterationnumber++;
-	//calculate new trajectory with the new v_start values from the newtonstep
-	err = trajectory(&v_start, false);
+		//if maximum number of newtonsteps is reached exit program and display error message
+		if(newtoniterationnumber > maxnewtonsteps)
+		{
+			printf("\n error couldn't find optimal solution\n");
+			exit(0);
+		}
+		newtonstep(newtoniterationnumber);
+		newtoniterationnumber++;
+		//calculate new trajectory with the new v_start values from the newtonstep
+		err = trajectory(&v_start, false);
 	}while(err > powf(10,-28));
 
 	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
@@ -40,6 +40,8 @@ int main()
 	printf("err = %lf\n",sqrt(err));
     
 
+	// save the trajectory
+	trajectory(&v_start, true);
 
 
 
