@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <stdbool.h> // why isn't this in c?
-#include "setup.h"
+#include "setupMitNewton.h"
 
 
 // global variables in the heap  ///////////////////////////////////////////////////////////////////////////
@@ -23,16 +23,13 @@ double err = 0;
 double Jacobian[3][3];
 //counter of the newton steps
 int newtoniterationnumber = 1;
-//vector to store the deviation of the numerical solution from the boundary conditions
-double errvec[3];
-
 
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
-double errfunction(double (*r)[3], double (*v)[3]);
+double errfunction(double (*r)[3][3], double (*v)[3][3]);
 void makeJacobian();
-void newtonstep();
+double newtonstep();
 double trajectory(double (*v_p)[3],  bool save);
 
 
@@ -140,10 +137,7 @@ double trajectory(double (*v_p)[3],  bool save)
 		//printf("Planet weights:\n");
 		double planet_weights[planet_num];
 		for (size_t i = 0; i < planet_num; i++){
-			if(fscanf(planet_files[i], "%lf", &planet_weights[i])==0){
-				perror("fscanf");
-				exit(EXIT_FAILURE);
-			}
+			fscanf(planet_files[i], "%lf", &planet_weights[i]);
 			//printf("	%g\n", planet_weights[i]);
 		}
 
@@ -151,15 +145,12 @@ double trajectory(double (*v_p)[3],  bool save)
 		double planet_coords[planet_num][3], planet_coords_current[planet_num][3], planet_coords_next[planet_num][3];
 		for (size_t i = 0; i < planet_num; i++){
 			for (size_t j = 0; j < 3; j++){
-				if(fscanf(planet_files[i], "%lf", &planet_coords_next[i][j])==0){
-					perror("fscanf");
-					exit(EXIT_FAILURE);
-				}
+				fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
 				//printf("	%lf\n", planet_coords[i][j]);
 			}
 		}
 
-		double r[3], v[3], a[3], tmp[3], checkpoint_dist;
+		double r[3], v[3], a[3], tmp[3];
 
 		//initialize boundaryvalues at TMIN
 		r[0] = r_start[0];
@@ -169,9 +160,8 @@ double trajectory(double (*v_p)[3],  bool save)
 		v[1] = (*v_p)[1];
 		v[2] = (*v_p)[2];
 
-
-		// check for reaching checkpoints
-		double closest_checkpoint_dist[CHECKPOINTS] = {10, 10, 10}; // square of closest distance to checkpoints
+		// save dist to check for overrun
+		//double old_dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
 		
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
@@ -190,10 +180,7 @@ double trajectory(double (*v_p)[3],  bool save)
 			// get planet positions 
 			for (size_t i = 0; i < planet_num; i++){
 				for (size_t j = 0; j < 3; j++){
-					if(fscanf(planet_files[i], "%lf", &planet_coords_next[i][j])==0){
-						perror("fscanf");
-						exit(EXIT_FAILURE);
-					}
+					fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
 					//printf("	%lf\n", planet_coords[i][j]);
 				}
 			}
@@ -237,21 +224,32 @@ double trajectory(double (*v_p)[3],  bool save)
 				r[0] += v[0] / SUB_STEPS;
 				r[1] += v[1] / SUB_STEPS;
 				r[2] += v[2] / SUB_STEPS;
+
 			}
-			//printf("x_koordinate %f\n", planet_coords[1][0]);
 
+			if(day == errdays[errdaycounter])
+				{
+					for(int i = 0 ; i < 3 ; i++)
+					{
+						errpoints[errdaycounter][i] = r[i];
+						errvelocitys[errdaycounter][i] = v[i];
+					}
+					errdaycounter++;
+				}			
+			
 
-
-			// calculate distance to checkpoints
-			for (size_t i = 0; i < CHECKPOINTS; i++){
-				checkpoint_dist = powf(r[0] - r_checkpoints[i][0], 2)+ powf(r[1] - r_checkpoints[i][1], 2) + powf(r[2] - r_checkpoints[i][2], 2);
-				if(checkpoint_dist < closest_checkpoint_dist[i]){
-					closest_checkpoint_dist[i] = checkpoint_dist;
-				}
+			// check if r_end overrun
+			/*double dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
+			if(!save && old_dist_squared > dist_squared){
+				old_dist_squared = dist_squared;
 			}
+			else {
+				return;
+			}*/
 
 			
 		}
+		errdaycounter = 0;
 		//printf("closing files\n");	
 		// close planet files
 		for (size_t i = 0; i < planet_num; i++){
@@ -259,15 +257,8 @@ double trajectory(double (*v_p)[3],  bool save)
 		}
 		if(save){ fclose(trajectory_file);}
 
-		//return(errfunction(&r, &v));
-
-		// sum closest distances to checkpoints
-		double err = 0;
-		for (size_t i = 0; i < CHECKPOINTS; i++){
-			err += closest_checkpoint_dist[i];
-		}
-
-		return err;
+		return(errfunction(&errpoints, &errvelocitys));
+			
 }
 
 /**
@@ -277,7 +268,7 @@ double trajectory(double (*v_p)[3],  bool save)
  * @param v 
  * @return double 
  */
-double errfunction(double (*r)[3], double (*v)[3])
+double errfunction(double (*r)[3][3], double (*v)[3][3])
 {
 	/*
 	valculates errorvector:
@@ -294,29 +285,18 @@ double errfunction(double (*r)[3], double (*v)[3])
 	————————————————————————————————————————————————
 	*/
 
-	//1.Fehlerfunktion nur Ortskoordinaten
-	/*
-	errvec[0] = 0.0000001*(r_end[0]-r[0]);
-	errvec[1] = 0.0000001*(r_end[1]-r[1]);
-	errvec[2] = 0.0000001*(r_end[2]-r[2]);
-	*/
-	
-	//2.Fehlerfunktion nur Impuls
-	/*
-	errvec[0] = 0.000002*(v_end[0]-v[0]);
-	errvec[1] = 0.000002*(v_end[1]-v[1]);
-	errvec[2] = 0.000002*(v_end[2]-v[2]);
-	*/
-	
-	//3.Fehlerfunktio Ort und Impuls kombiniert
-	
-	//Wahl der Fehlerfunktion ist eventuell noch nicht optimal, kann man noch ein bischen rumprobieren
-	errvec[0] = 2e-10*powf(v_end[0]-(*v)[0],2)+2e-10*powf(r_end[0]-(*r)[0],2);
-	errvec[1] = 2e-10*powf(v_end[1]-(*v)[1],2)+2e-10*powf(r_end[1]-(*r)[1],2);
-	errvec[2] = 2e-10*powf(v_end[2]-(*v)[2],2)+2e-10*powf(r_end[2]-(*r)[2],2);
-	
-
+		for(int i = 0 ; i < 3 ; i++)
+		{
+			errvec[i] = 0;
+			for(int j = 0 ; j < 3 ; j++)
+			{
+			errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
+			}
+		}
+		
+		
 	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
+	//printf("%lf\n",abserr);
 	return abserr;
 }
 
@@ -351,6 +331,7 @@ void calcJacobian()
 		
 		v_start[j]+=h;
 		err = trajectory(&v_start, false);
+
 		for(int i = 0 ;  i < 3 ; i++)
 		{
 			Jacobian[i][j]=errvec[i];
@@ -372,7 +353,7 @@ void calcJacobian()
  * 
  * @author Moritz Schroer
  */
-void newtonstep( int newtoniterationnumber)
+double newtonstep(int ni)
 {
 	/*
 	v_start^(n) := (v_start[0] , v_start[1] , v_start[2])
@@ -394,28 +375,36 @@ void newtonstep( int newtoniterationnumber)
 
 	—————————————————————————————————————————————————-
 	*/
-	
-	
+
+
+    /* numerical solution of equation system (doesn't work)
+    -----------------------------------------------------------------------------------------------------------
+    //calculate Jacobian Matrix Derr of the errorfunction
+	calcJacobian();
+
 	//delta_s vector to solve the linear system of equation with Jacobi iteration method
-	double deltav_n[3] = {0 , 0 , 0};
-	//double deltav_np[3] = {0 , 0 , 0}; 
+	double deltav_n[3] = {-0. , -0.0 , -0.0};
+	double deltav_np[3] = {0 , 0 , 0}; 
 	//sles := Derr*deltas, if | sles- |^2 < 1e-7 break; because linear equation system is solved.
 	
-	//calculate Jacobian Matrix Derr of the errorfunction
-	calcJacobian();
-	/*
-	double abserrles;
+	double abserrles = 100;
 	//initial guess of the solution of the linear system of equations
-	
-	do{				
+	do{	
+		
+			for(int j = 0 ; j < 3 ; j++)
+			{
+				printf("errvec[%d] = %lf\n", j, errvec[j]);
+			
+		}
+
 		//do Jacobi step
-		deltav_np[0] = (-errvec[0]-Jacobian[0][1]*deltav_n[1]-Jacobian[0][2]*deltav_n[2])/Jacobian[0][0]; 
-		deltav_np[1] = (-errvec[1]-Jacobian[1][0]*deltav_n[0]-Jacobian[1][2]*deltav_n[2])/Jacobian[1][1]; 
-		deltav_np[2] = (-errvec[2]-Jacobian[2][0]*deltav_n[0]-Jacobian[2][1]*deltav_n[1])/Jacobian[2][2]; 
+		deltav_np[0] =  (-errvec[0]-Jacobian[0][1]*deltav_n[1]-Jacobian[0][2]*deltav_n[2])/Jacobian[0][0]; 
+		deltav_np[1] =  (-errvec[1]-Jacobian[1][0]*deltav_n[0]-Jacobian[1][2]*deltav_n[2])/Jacobian[1][1]; 
+		deltav_np[2] =  (-errvec[2]-Jacobian[2][0]*deltav_n[0]-Jacobian[2][1]*deltav_n[1])/Jacobian[2][2]; 
 		deltav_n[0] = deltav_np[0];
 		deltav_n[1] = deltav_np[1];
 		deltav_n[2] = deltav_np[2];
-
+		
 
         double sles[3] = {0.0 , 0.0 , 0.0};
 		//calculate Derr(v_start^(n))*(s_x,s_y,s_z)
@@ -426,25 +415,26 @@ void newtonstep( int newtoniterationnumber)
 				sles[i]+=(Jacobian[i][j]*deltav_n[j]);
 			}
 		}
-		abserrles = sqrt(pow(sles[0]+errvec[0],2)+pow(sles[1]+errvec[1],2)+pow(sles[2]+errvec[2],2));
-
-
+		abserrles = (sles[0]+errvec[0])*(sles[0]+errvec[0])+(sles[1]+errvec[1])*(sles[1]+errvec[1])+(sles[2]+errvec[2])*(sles[2]+errvec[2]);
 		//check if abserrless is finte else exit programm and display error message
 		if(isinf(abserrles) || isnan(abserrles))
 		{
-			printf("error couldnt perform Newtonstep abserror exceeds limits\n");
-			exit(EXIT_FAILURE);
+			printf("error couldnt perform Newtonstep abserror exceeds limits %lf\n",abserrles);
+			exit(0);
 		}
-	}while(abserrles > powf(10,-7));
-	*/
-	
-	//calculate det(Jacobian)
-	double det = Jacobian[0][0]*Jacobian[1][1]*Jacobian[2][2]+Jacobian[0][1]*Jacobian[1][2]*Jacobian[2][0]+Jacobian[0][2]*Jacobian[1][0]*Jacobian[2][1]
+	}while(abserrles > powf(10,-8));
+	----------------------------------------------------------------------------------------------------------------------------*/
+
+        //calculate Jacobian Matrix Derr of the errorfunction
+	    calcJacobian();
+
+		//calculate det(Jacobian)
+		double det = Jacobian[0][0]*Jacobian[1][1]*Jacobian[2][2]+Jacobian[0][1]*Jacobian[1][2]*Jacobian[2][0]+Jacobian[0][2]*Jacobian[1][0]*Jacobian[2][1]
         -Jacobian[0][2]*Jacobian[1][1]*Jacobian[2][0]-Jacobian[0][0]*Jacobian[1][2]*Jacobian[2][1]-Jacobian[0][1]*Jacobian[1][0]*Jacobian[2][2];
         
-  		
+  		double solution[3] = {0 , 0 , 0};
 
-	//calculate inverse of Jacobian
+		//calculate Jacobian^-1
         double inverse[3][3];
         inverse[0][0]=1/det*(Jacobian[1][1]*Jacobian[2][2]-Jacobian[1][2]*Jacobian[2][1]);
         inverse[0][1]=1/det*(Jacobian[0][2]*Jacobian[2][1]-Jacobian[0][1]*Jacobian[2][2]);
@@ -462,18 +452,17 @@ void newtonstep( int newtoniterationnumber)
         {
             for(int j = 0 ; j < 3 ; j++)
             {
-                deltav_n[i]+=inverse[i][j]*errvec[j];
+                solution[i]+=inverse[i][j]*errvec[j];
             }
         }
-
 	//after linear equation system is solved set v_start^(n+1) = v_start^(n) + deltav_n
-	double gain = 1e-3;
-	v_start[0]+=gain * deltav_n[0];
-	v_start[1]+=gain * deltav_n[1];
-	v_start[2]+=gain * deltav_n[2];
+	v_start[0]-=solution[0];
+	v_start[1]-=solution[1];
+	v_start[2]-=solution[2];
 
 	//solve boundary value problem with new initial velocity
-	trajectory(&v_start, true);
-	printf("%04d. iteration : v_start = {%.10f , %.10f , %.10f}	error = %.15f\n", newtoniterationnumber,v_start[0],v_start[1],v_start[2], abserrles);
+	double abserror = trajectory(&v_start, true);
+	printf("%d. iteration : v_start = [%lf , %lf , %lf],      err = abserror %lf*e^-10\n", ni,v_start[0],v_start[1],v_start[2], abserror*powf(10,10));
+    return(abserror);
 }
 
