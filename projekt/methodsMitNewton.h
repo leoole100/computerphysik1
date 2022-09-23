@@ -426,39 +426,48 @@ double newtonstep(int ni)
 	----------------------------------------------------------------------------------------------------------------------------*/
 
         //calculate Jacobian Matrix Derr of the errorfunction
-	    calcJacobian();
+	calcJacobian();
 
-		//calculate det(Jacobian)
-		double det = Jacobian[0][0]*Jacobian[1][1]*Jacobian[2][2]+Jacobian[0][1]*Jacobian[1][2]*Jacobian[2][0]+Jacobian[0][2]*Jacobian[1][0]*Jacobian[2][1]
-        -Jacobian[0][2]*Jacobian[1][1]*Jacobian[2][0]-Jacobian[0][0]*Jacobian[1][2]*Jacobian[2][1]-Jacobian[0][1]*Jacobian[1][0]*Jacobian[2][2];
-        
-  		double solution[3] = {0 , 0 , 0};
+		
+  	double solution[3] = {0 , 0 , 0};
 
-		//calculate Jacobian^-1
-        double inverse[3][3];
-        inverse[0][0]=1/det*(Jacobian[1][1]*Jacobian[2][2]-Jacobian[1][2]*Jacobian[2][1]);
-        inverse[0][1]=1/det*(Jacobian[0][2]*Jacobian[2][1]-Jacobian[0][1]*Jacobian[2][2]);
-        inverse[0][2]=1/det*(Jacobian[0][1]*Jacobian[1][2]-Jacobian[0][2]*Jacobian[1][1]);
-
-        inverse[1][0]=1/det*(Jacobian[1][2]*Jacobian[2][0]-Jacobian[1][0]*Jacobian[2][2]);
-        inverse[1][1]=1/det*(Jacobian[0][0]*Jacobian[2][2]-Jacobian[0][2]*Jacobian[2][0]);
-        inverse[1][2]=1/det*(Jacobian[0][2]*Jacobian[1][0]-Jacobian[0][0]*Jacobian[1][2]);
-        
-        inverse[2][0]=1/det*(Jacobian[1][0]*Jacobian[2][1]-Jacobian[1][1]*Jacobian[2][0]);
-        inverse[2][1]=1/det*(Jacobian[0][1]*Jacobian[2][0]-Jacobian[0][0]*Jacobian[2][1]);
-        inverse[2][2]=1/det*(Jacobian[0][0]*Jacobian[1][1]-Jacobian[0][1]*Jacobian[1][0]);
-
+	//Gauss Algorithmus für Dreiecksform
         for(int i = 0 ; i < 3 ; i++)
-        {
-            for(int j = 0 ; j < 3 ; j++)
+        {   
+            double fac1 = Jacobian[i][i];
+            if(Jacobian[i][i] != 0)
             {
-                solution[i]+=inverse[i][j]*errvec[j];
+                for(int j = 0 ; j < 3 ; j++)
+                {
+                    Jacobian[i][j]/=fac1;
+                }
+                errvec[i]/=fac1;
+            }
+            for(int j = i+1 ; j < 3 ; j++)
+            {
+                double fac2 = Jacobian[j][i];
+                errvec[j]-=errvec[i]*fac2;
+                for(int k = 0 ; k < 3 ; k++)
+                {   
+                    Jacobian[j][k]-=Jacobian[i][k]*fac2;
+                }
             }
         }
-	//after linear equation system is solved set v_start^(n+1) = v_start^(n) + deltav_n
-	v_start[0]-=solution[0];
-	v_start[1]-=solution[1];
-	v_start[2]-=solution[2];
+
+	//solve System 
+        for(int i = 2 ; i > 0 ; i--)
+        {
+            for(int j = 0 ; j < i ; j++)
+            {
+                double fac = Jacobian[j][i];                   
+                Jacobian[j][i]=0;
+                errvec[j]-=errvec[i]*fac;
+            }
+        }
+
+        v_start[0]-=errvec[0];
+	v_start[1]-=errvec[1];
+	v_start[2]-=errvec[2];
 
 	//solve boundary value problem with new initial velocity
 	double abserror = trajectory(&v_start, true);
