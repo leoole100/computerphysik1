@@ -23,16 +23,13 @@ double err = 0;
 double Jacobian[3][3];
 //counter of the newton steps
 int newtoniterationnumber = 1;
-//vector to store the deviation of the numerical solution from the boundary conditions
-double errvec[3];
-
 
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
-double errfunction(double (*r)[3], double (*v)[3]);
+double errfunction(double (*r)[3][3], double (*v)[3][3]);
 void makeJacobian();
-void newtonstep();
+double newtonstep();
 double trajectory(double (*v_p)[3],  bool save);
 
 
@@ -159,7 +156,7 @@ double trajectory(double (*v_p)[3],  bool save)
 			}
 		}
 
-		double r[3], v[3], a[3], tmp[3], checkpoint_dist;
+		double r[3], v[3], a[3], tmp[3];
 
 		//initialize boundaryvalues at TMIN
 		r[0] = r_start[0];
@@ -169,9 +166,8 @@ double trajectory(double (*v_p)[3],  bool save)
 		v[1] = (*v_p)[1];
 		v[2] = (*v_p)[2];
 
-
-		// check for reaching checkpoints
-		double closest_checkpoint_dist[CHECKPOINTS] = {10, 10, 10}; // square of closest distance to checkpoints
+		// save dist to check for overrun
+		//double old_dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
 		
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
@@ -237,21 +233,32 @@ double trajectory(double (*v_p)[3],  bool save)
 				r[0] += v[0] / SUB_STEPS;
 				r[1] += v[1] / SUB_STEPS;
 				r[2] += v[2] / SUB_STEPS;
+
 			}
-			//printf("x_koordinate %f\n", planet_coords[1][0]);
 
+			if(day == errdays[errdaycounter])
+				{
+					for(int i = 0 ; i < 3 ; i++)
+					{
+						errpoints[errdaycounter][i] = r[i];
+						errvelocitys[errdaycounter][i] = v[i];
+					}
+					errdaycounter++;
+				}			
+			
 
-
-			// calculate distance to checkpoints
-			for (size_t i = 0; i < CHECKPOINTS; i++){
-				checkpoint_dist = powf(r[0] - r_checkpoints[i][0], 2)+ powf(r[1] - r_checkpoints[i][1], 2) + powf(r[2] - r_checkpoints[i][2], 2);
-				if(checkpoint_dist < closest_checkpoint_dist[i]){
-					closest_checkpoint_dist[i] = checkpoint_dist;
-				}
+			// check if r_end overrun
+			/*double dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
+			if(!save && old_dist_squared > dist_squared){
+				old_dist_squared = dist_squared;
 			}
+			else {
+				return;
+			}*/
 
 			
 		}
+		errdaycounter = 0;
 		//printf("closing files\n");	
 		// close planet files
 		for (size_t i = 0; i < planet_num; i++){
@@ -259,13 +266,221 @@ double trajectory(double (*v_p)[3],  bool save)
 		}
 		if(save){ fclose(trajectory_file);}
 
-		//return(errfunction(&r, &v));
+		return(errfunction(&errpoints, &errvelocitys));
+			
+}
 
-		// sum closest distances to checkpoints
-		double err = 0;
-		for (size_t i = 0; i < CHECKPOINTS; i++){
-			err += closest_checkpoint_dist[i];
+/**
+ * @brief returns the value for the error function
+ * 
+ * @param r 
+ * @param v 
+ * @return double 
+ */
+double errfunction(double (*r)[3][3], double (*v)[3][3])
+{
+	/*
+	valculates errorvector:
+	
+	 errvec = v_end,boundaryconditions - v_end,numericalsolution + r_end,boundaryconditions-r_end,numericalsolution
+	
+	inputs:
+		None
+
+	outputs :
+		abserr : double
+		absolute value of the errorvector
+
+	————————————————————————————————————————————————
+	*/
+
+		for(int i = 0 ; i < 3 ; i++)
+		{
+			errvec[i] = 0;
+			for(int j = 0 ; j < 3 ; j++)
+			{
+			errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
+			}
+		}
+		
+		
+	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
+	//printf("%lf\n",abserr);
+	return abserr;
+}
+
+/**
+ * @brief 
+ * 
+ * @author Moritz Schroer
+ */
+void calcJacobian()
+{	
+	/*
+    vec(v_n)=v_start^(n)
+	Computes Jacobian Matrix Derr(vec(v_n)) by calculating the partial dericatives with difference quotient:
+
+	d err_i/d x = (errvec(v_start[0] + h * e_x , v_start[1] , v_start[2]) - errvec(v_start[0] , v_start[1] , v_start[2])) / h
+	d err_i/d y = (errvec(v_start[0] , v_start[1] + h *e_y , v_start[2]) - errvec(v_start[0] , v_start[1] , v_start[2])) / h
+	d err_i/d z = (errvec(v_start[0] , v_start[1] , v_start[2] + h *e_z) - errvec(v_start[0] , v_start[1] , v_start[2])) / h
+
+	and then resets errvec = err(v_start[0] , v_start[1] , v_start[2])
+
+	inputs:
+		None
+
+	outputs :
+		None
+
+	————————————————————————————————————————————————
+	*/
+
+	for(int j = 0 ; j < 3 ; j++ )
+	{
+		
+		v_start[j]+=h;
+		err = trajectory(&v_start, false);
+
+		for(int i = 0 ;  i < 3 ; i++)
+		{
+			Jacobian[i][j]=errvec[i];
+		}
+		v_start[j]-=h;
+
+		err = trajectory(&v_start, false);
+		for(int i = 0 ; i < 3 ; i++)
+		{
+			Jacobian[i][j]-=errvec[i];
+			Jacobian[i][j]/=h;
+		}
+		
+	}
+}
+
+/**
+ * @brief 
+ * 
+ * @author Moritz Schroer
+ */
+double newtonstep(int ni)
+{
+	/*
+	v_start^(n) := (v_start[0] , v_start[1] , v_start[2])
+
+	Calculates Newtonstep v_start^(n+1) = v_start^(n) - (Derr(v_start^(n)))^-1 * err(v_start^(n))	
+
+	Therefore the following System of equations is solved with Jacobi iteration (deltav_n := (delta v_x , delta v_y , delta v_z)):
+
+	Derr(v_start^(n)) * deltav_n    =     -err(v_start^(n)) 
+	
+	then set:
+
+	v_start^(n+1) = v_start^(n) + deltav_n
+
+	inputs:
+		None
+	outputs:
+		None
+
+	—————————————————————————————————————————————————-
+	*/
+
+
+    /* numerical solution of equation system (doesn't work)
+    -----------------------------------------------------------------------------------------------------------
+    //calculate Jacobian Matrix Derr of the errorfunction
+	calcJacobian();
+
+	//delta_s vector to solve the linear system of equation with Jacobi iteration method
+	double deltav_n[3] = {-0. , -0.0 , -0.0};
+	double deltav_np[3] = {0 , 0 , 0}; 
+	//sles := Derr*deltas, if | sles- |^2 < 1e-7 break; because linear equation system is solved.
+	
+	double abserrles = 100;
+	//initial guess of the solution of the linear system of equations
+	do{	
+		
+			for(int j = 0 ; j < 3 ; j++)
+			{
+				printf("errvec[%d] = %lf\n", j, errvec[j]);
+			
 		}
 
-		return err;
+		//do Jacobi step
+		deltav_np[0] =  (-errvec[0]-Jacobian[0][1]*deltav_n[1]-Jacobian[0][2]*deltav_n[2])/Jacobian[0][0]; 
+		deltav_np[1] =  (-errvec[1]-Jacobian[1][0]*deltav_n[0]-Jacobian[1][2]*deltav_n[2])/Jacobian[1][1]; 
+		deltav_np[2] =  (-errvec[2]-Jacobian[2][0]*deltav_n[0]-Jacobian[2][1]*deltav_n[1])/Jacobian[2][2]; 
+		deltav_n[0] = deltav_np[0];
+		deltav_n[1] = deltav_np[1];
+		deltav_n[2] = deltav_np[2];
+		
+
+        double sles[3] = {0.0 , 0.0 , 0.0};
+		//calculate Derr(v_start^(n))*(s_x,s_y,s_z)
+		for(int i = 0 ; i < 3 ; i++)
+		{
+			for(int j = 0 ; j < 3 ; j++)
+			{
+				sles[i]+=(Jacobian[i][j]*deltav_n[j]);
+			}
+		}
+		abserrles = (sles[0]+errvec[0])*(sles[0]+errvec[0])+(sles[1]+errvec[1])*(sles[1]+errvec[1])+(sles[2]+errvec[2])*(sles[2]+errvec[2]);
+		//check if abserrless is finte else exit programm and display error message
+		if(isinf(abserrles) || isnan(abserrles))
+		{
+			printf("error couldnt perform Newtonstep abserror exceeds limits %lf\n",abserrles);
+			exit(0);
+		}
+	}while(abserrles > powf(10,-8));
+	----------------------------------------------------------------------------------------------------------------------------*/
+
+        //calculate Jacobian Matrix Derr of the errorfunction
+	calcJacobian();
+
+		
+  	double solution[3] = {0 , 0 , 0};
+
+	//Gauss Algorithmus für Dreiecksform
+        for(int i = 0 ; i < 3 ; i++)
+        {   
+            double fac1 = Jacobian[i][i];
+            if(Jacobian[i][i] != 0)
+            {
+                for(int j = 0 ; j < 3 ; j++)
+                {
+                    Jacobian[i][j]/=fac1;
+                }
+                errvec[i]/=fac1;
+            }
+            for(int j = i+1 ; j < 3 ; j++)
+            {
+                double fac2 = Jacobian[j][i];
+                errvec[j]-=errvec[i]*fac2;
+                for(int k = 0 ; k < 3 ; k++)
+                {   
+                    Jacobian[j][k]-=Jacobian[i][k]*fac2;
+                }
+            }
+        }
+
+	//solve System 
+        for(int i = 2 ; i > 0 ; i--)
+        {
+            for(int j = 0 ; j < i ; j++)
+            {
+                double fac = Jacobian[j][i];                   
+                Jacobian[j][i]=0;
+                errvec[j]-=errvec[i]*fac;
+            }
+        }
+
+        v_start[0]-=errvec[0];
+	v_start[1]-=errvec[1];
+	v_start[2]-=errvec[2];
+
+	//solve boundary value problem with new initial velocity
+	double abserror = trajectory(&v_start, false);
+	printf("%4d. iteration : v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
+    return(abserror);
 }
+
