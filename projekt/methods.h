@@ -31,7 +31,7 @@ double gradient[3];
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
-double errfunction(double (*r)[3][3], double (*v)[3][3]);
+double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3]);
 void makeJacobian();
 double newtonstep();
 double trajectory(double (*v_p)[3],  bool save);
@@ -292,7 +292,7 @@ double trajectory(double (*v_p)[3],  bool save)
  * @param v 
  * @return double 
  */
-double errfunction(double (*r)[3][3], double (*v)[3][3])
+double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3])
 {
 	/*
 	valculates errorvector:
