@@ -18,5 +18,5 @@ int main(){
 
 
 	double err = trajectory(&v_start, true);	
-	printf("the error:%g",err);
+	printf("the error: %g",err);
 }

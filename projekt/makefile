@@ -14,8 +14,9 @@ gridSearch: gridSearch.c
 	./$@.out
 
 gridSearchMultithreading: gridSearchMultithreading.c
-	gcc -O3 $< -o $@.out -lm
-	./$@.out
+	gcc -O3 $< -o $@.out -lm -lpthread
+	time ./$@.out
+	tput bel
 	
 mainMitNewton: mainMitNewton.c
 	gcc -O3 $< -o $@.out -lm

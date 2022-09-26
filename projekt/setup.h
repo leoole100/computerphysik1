@@ -41,7 +41,7 @@ double v_end[3] = {-0.00028974465364584034, -0.000899297755505124, -0.0047100815
 //initial guess of velocity, size that needs to be optimized
 //double v_start[3] ={-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
 //double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; //manually found value for swing by
-double v_start[3] =  {-0.0094042634 , 0.0217337274 , 0.0008145859}; // found with grid search
+double v_start[3] =   {-0.00946868, 0.0217469, 0.0008089}; // found with grid search
 /*
 {-0.0096,		0.0218,	0.0008} // schießt zu früh vorbei
 {-0.00936001, 	0.02171,0.000830002} zu spät

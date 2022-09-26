@@ -16,18 +16,23 @@
 void *thread(void *arg);
 
 double dv = 1e-5; //stepsize
-double step_plus[3] = {50 , 30 , 10};
-//double step_plus[3] = {20 , 20 , 10};
+double steps[3] = {50 , 10 , 10};
 
-double step_minus[3];
+const double coordinateSystem[3][3] = {
+	{-0.919601, 0.36784, -0.13794},
+	{0,0,1},
+	{0.36784, 0.919601, 0.} // cross product of the above
+};
+
+/*const double coordinateSystem[3][3] = {
+	{1,0,0},
+	{0,1,0},
+	{0,0,1}
+};*/
+
 
 int main(){
-
-	step_minus[0] = step_plus[0];
-	step_minus[1] = step_plus[1];
-	step_minus[2] = step_plus[2];
-
-	printf("%g grid points in %d threads\n", (step_minus[0] + step_plus[0])*(step_minus[1] + step_plus[1])*(step_minus[2] + step_plus[2]), NUM_THREADS);
+	printf("%g grid points in %d threads\n", 8*steps[0]*steps[1]*steps[2], NUM_THREADS);
 
 	int thread_args[NUM_THREADS];
 	pthread_t threads[NUM_THREADS];
@@ -52,34 +57,33 @@ void *thread(void *arg){
 	// exporting
 	char filename[210];
 	snprintf(filename, 22, "data/gridSearch%02d.dat", n);
-	printf("	saving in: %s\n", filename);
+	printf("	saving in: %s \n", filename);
 	FILE * results_file = fopen(filename, "w+");
 
 	double v[3];
-	v[0] = v_start[0] - step_minus[0]*dv;
-	v[1] = v_start[1] - step_minus[1]*dv;
-	v[2] = v_start[2] - step_minus[2]*dv;
 
 	for(
-		int i = (step_minus[0] + step_plus[0])/NUM_THREADS * n; 
-		i < (step_minus[0] + step_plus[0])/NUM_THREADS * (n+1) - 1; 
+		int i = (steps[0] + steps[0])/NUM_THREADS * n; 
+		i < (steps[0] + steps[0])/NUM_THREADS * (n+1); 
 	i++){	
-		
-		v[0] = v_start[0] - step_minus[0]*dv + i*dv;
-
-		for(int j = 0 ; j < step_minus[1] + step_plus[1] ; j++)
+		for(int j = 0 ; j < steps[1] + steps[1] ; j++)
 		{
-			v[1]+=dv;
-			for(int k = 0 ; k < step_minus[2] + step_plus[2] ; k++)
+			for(int k = 0 ; k < steps[2] + steps[2] ; k++)
 			{
-				v[2]+=dv;
-				double err = trajectory(&v, false);
-				fprintf(results_file, "%.10f %.10f %.10f %g \n", v[0], v[1], v[2], err);
-			}
-			v[2]-=(step_minus[2] + step_plus[2])*dv;
+				// set v to v_start
+				v[0] = v_start[0];
+				v[1] = v_start[1];
+				v[2] = v_start[2];
 
+				// calculate velocity in cartesian coordinates
+				v[0] += coordinateSystem[0][0] * (i - steps[0]) * dv + coordinateSystem[1][0] * (j - steps[1]) * dv + coordinateSystem[2][0] * (k - steps[2]) * dv;
+				v[1] += coordinateSystem[0][1] * (i - steps[0]) * dv + coordinateSystem[1][1] * (j - steps[1]) * dv + coordinateSystem[2][1] * (k - steps[2]) * dv;
+				v[2] += coordinateSystem[0][2] * (i - steps[0]) * dv + coordinateSystem[1][2] * (j - steps[1]) * dv + coordinateSystem[2][2] * (k - steps[2]) * dv;
+				
+				double err = trajectory(&v, false);
+				fprintf(results_file, "%d %d %d %.10f %.10f %.10f %g \n", i, j, k, v[0], v[1], v[2], err);
+			}
 		}
-		v[1]-=(step_minus[1] + step_plus[1])*dv;
 	}
 
 	fclose(results_file);
