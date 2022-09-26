@@ -11,12 +11,12 @@
 #include "methods.h"
 #include <pthread.h>
 
-#define NUM_THREADS 10
+#define NUM_THREADS 6
 
 void *thread(void *arg);
 
-double dv = 1e-5; //stepsize
-double steps[3] = {50 , 10 , 10};
+double dv = 1e-6; //stepsize
+double steps[3] = {20, 5, 5};
 
 const double coordinateSystem[3][3] = {
 	{-0.919601, 0.36784, -0.13794},
@@ -65,11 +65,18 @@ void *thread(void *arg){
 	for(
 		int i = (steps[0] + steps[0])/NUM_THREADS * n; 
 		i < (steps[0] + steps[0])/NUM_THREADS * (n+1); 
-	i++){	
+	i++){
 		for(int j = 0 ; j < steps[1] + steps[1] ; j++)
 		{
 			for(int k = 0 ; k < steps[2] + steps[2] ; k++)
 			{
+
+				
+				// print progress of the thread 0
+				if(n==0){
+					printf("	%f", 100. * (i) / (2*(steps[0] + steps[0])/NUM_THREADS));
+				}
+
 				// set v to v_start
 				v[0] = v_start[0];
 				v[1] = v_start[1];

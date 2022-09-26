@@ -23,6 +23,8 @@ double err = 0;
 double Jacobian[3][3];
 //counter of the newton steps
 int newtoniterationnumber = 1;
+double errvec[3]; // output of jacobian and input of newtonstep
+
 
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
@@ -166,9 +168,11 @@ double trajectory(double (*v_p)[3],  bool save)
 		v[1] = (*v_p)[1];
 		v[2] = (*v_p)[2];
 
-		// save dist to check for overrun
-		//double old_dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
-		
+		// for keeping track of the right boundary condition
+		double end_min[NUM_ENDS] = {100,100,100};
+		double errpoints[NUM_ENDS][3], errvelocitys[NUM_ENDS][3];
+		int errdaycounter = 0;
+
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
 
@@ -236,29 +240,37 @@ double trajectory(double (*v_p)[3],  bool save)
 
 			}
 
-			if(day == errdays[errdaycounter])
+			if(day == end_days[errdaycounter])
+			{
+				for(int i = 0 ; i < 3 ; i++)
 				{
-					for(int i = 0 ; i < 3 ; i++)
-					{
-						errpoints[errdaycounter][i] = r[i];
-						errvelocitys[errdaycounter][i] = v[i];
-					}
-					errdaycounter++;
-				}			
-			
-
-			// check if r_end overrun
-			/*double dist_squared = powf(r_end[0] - r[0], 2) + powf(r_end[1] - r[1], 2) + powf(r_end[2] - r[2], 2);
-			if(!save && old_dist_squared > dist_squared){
-				old_dist_squared = dist_squared;
+					errpoints[errdaycounter][i] = r[i];
+					errvelocitys[errdaycounter][i] = v[i];
+				}
+				errdaycounter++;
 			}
-			else {
-				return;
-			}*/
 
-			
+				
+			/*// check if spacecraft is close to boundary
+			for (size_t i = 0; i < NUM_ENDS; i++){
+				// calculate distance between r_end[i] and r
+				tmp[0] = r_end[i][0] - r[0];
+				tmp[1] = r_end[i][1] - r[1];
+				tmp[2] = r_end[i][2] - r[2];
+				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
+
+				// check if distance is smaller than current minimum
+				if(r_norm < end_min[i]){
+					end_min[i] = r_norm;
+					errpoints[i][0] = r[0];
+					errpoints[i][1] = r[1];
+					errpoints[i][2] = r[2];
+					errvelocitys[i][0] = v[0];
+					errvelocitys[i][1] = v[1];
+					errvelocitys[i][2] = v[2];
+				}
+			}*/			
 		}
-		errdaycounter = 0;
 		//printf("closing files\n");	
 		// close planet files
 		for (size_t i = 0; i < planet_num; i++){
@@ -294,14 +306,12 @@ double errfunction(double (*r)[3][3], double (*v)[3][3])
 	————————————————————————————————————————————————
 	*/
 
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			errvec[i] = 0;
-			for(int j = 0 ; j < 3 ; j++)
-			{
+	for(int i = 0 ; i < 3 ; i++){
+		errvec[i] = 0;
+		for(int j = 0 ; j < 3 ; j++){
 			errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
-			}
 		}
+	}
 		
 		
 	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
@@ -441,46 +451,46 @@ double newtonstep(int ni)
   	double solution[3] = {0 , 0 , 0};
 
 	//Gauss Algorithmus für Dreiecksform
-        for(int i = 0 ; i < 3 ; i++)
-        {   
-            double fac1 = Jacobian[i][i];
-            if(Jacobian[i][i] != 0)
-            {
-                for(int j = 0 ; j < 3 ; j++)
-                {
-                    Jacobian[i][j]/=fac1;
-                }
-                errvec[i]/=fac1;
-            }
-            for(int j = i+1 ; j < 3 ; j++)
-            {
-                double fac2 = Jacobian[j][i];
-                errvec[j]-=errvec[i]*fac2;
-                for(int k = 0 ; k < 3 ; k++)
-                {   
-                    Jacobian[j][k]-=Jacobian[i][k]*fac2;
-                }
-            }
-        }
+	for(int i = 0 ; i < 3 ; i++)
+	{   
+		double fac1 = Jacobian[i][i];
+		if(Jacobian[i][i] != 0)
+		{
+			for(int j = 0 ; j < 3 ; j++)
+			{
+				Jacobian[i][j]/=fac1;
+			}
+			errvec[i]/=fac1;
+		}
+		for(int j = i+1 ; j < 3 ; j++)
+		{
+			double fac2 = Jacobian[j][i];
+			errvec[j]-=errvec[i]*fac2;
+			for(int k = 0 ; k < 3 ; k++)
+			{   
+				Jacobian[j][k]-=Jacobian[i][k]*fac2;
+			}
+		}
+	}
 
 	//solve System 
-        for(int i = 2 ; i > 0 ; i--)
-        {
-            for(int j = 0 ; j < i ; j++)
-            {
-                double fac = Jacobian[j][i];                   
-                Jacobian[j][i]=0;
-                errvec[j]-=errvec[i]*fac;
-            }
-        }
+	for(int i = 2 ; i > 0 ; i--)
+	{
+		for(int j = 0 ; j < i ; j++)
+		{
+			double fac = Jacobian[j][i];                   
+			Jacobian[j][i]=0;
+			errvec[j]-=errvec[i]*fac;
+		}
+	}
 
-        v_start[0]-=errvec[0];
+	v_start[0]-=errvec[0];
 	v_start[1]-=errvec[1];
 	v_start[2]-=errvec[2];
 
 	//solve boundary value problem with new initial velocity
 	double abserror = trajectory(&v_start, false);
-	printf("%4d. iteration : v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
+	printf("%4d. iteration: v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }
 

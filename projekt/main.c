@@ -24,7 +24,7 @@ int main()
 	printf("begin Newtoniteration\n");
 	do{
 	//if maximum number of newtonsteps is reached exit program and display error message
-	if(newtoniterationnumber > maxnewtonsteps)
+	if(newtoniterationnumber > NEWTON_STEPS)
 	{
 		printf("\n error couldn't find optimal solution\n");
 		exit(0);
@@ -32,7 +32,7 @@ int main()
 	err = newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	
-	}while(err > 1e-12);
+	}while(err > NEWTON_PRECISION);
 
 	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
 	
