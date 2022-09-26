@@ -29,7 +29,7 @@ int main()
 		printf("\n error couldn't find optimal solution\n");
 		exit(0);
 	}
-	err = newtonstepMitHesse(newtoniterationnumber);
+	err = newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	
 	}while(err > NEWTON_PRECISION);
