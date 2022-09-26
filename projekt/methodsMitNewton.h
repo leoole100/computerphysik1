@@ -137,7 +137,10 @@ double trajectory(double (*v_p)[3],  bool save)
 		//printf("Planet weights:\n");
 		double planet_weights[planet_num];
 		for (size_t i = 0; i < planet_num; i++){
-			fscanf(planet_files[i], "%lf", &planet_weights[i]);
+			if(fscanf(planet_files[i], "%lf", &planet_weights[i])==0){
+				perror("fscanf");
+				exit(EXIT_FAILURE);
+			}
 			//printf("	%g\n", planet_weights[i]);
 		}
 
@@ -145,7 +148,10 @@ double trajectory(double (*v_p)[3],  bool save)
 		double planet_coords[planet_num][3], planet_coords_current[planet_num][3], planet_coords_next[planet_num][3];
 		for (size_t i = 0; i < planet_num; i++){
 			for (size_t j = 0; j < 3; j++){
-				fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
+				if(fscanf(planet_files[i], "%lf", &planet_coords_next[i][j])==0){
+					perror("fscanf");
+					exit(EXIT_FAILURE);
+				}
 				//printf("	%lf\n", planet_coords[i][j]);
 			}
 		}
@@ -180,7 +186,10 @@ double trajectory(double (*v_p)[3],  bool save)
 			// get planet positions 
 			for (size_t i = 0; i < planet_num; i++){
 				for (size_t j = 0; j < 3; j++){
-					fscanf(planet_files[i], "%lf", &planet_coords_next[i][j]);
+					if(fscanf(planet_files[i], "%lf", &planet_coords_next[i][j])==0){
+						perror("fscanf");
+						exit(EXIT_FAILURE);
+					}
 					//printf("	%lf\n", planet_coords[i][j]);
 				}
 			}
@@ -470,8 +479,8 @@ double newtonstep(int ni)
 	v_start[2]-=errvec[2];
 
 	//solve boundary value problem with new initial velocity
-	double abserror = trajectory(&v_start, true);
-	printf("%d. iteration : v_start = [%lf , %lf , %lf],      err = abserror %lf*e^-10\n", ni,v_start[0],v_start[1],v_start[2], abserror*powf(10,10));
+	double abserror = trajectory(&v_start, false);
+	printf("%4d. iteration : v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }
 

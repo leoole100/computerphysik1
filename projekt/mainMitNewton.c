@@ -32,13 +32,13 @@ int main()
 	err = newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	
-	}while(err > powf(10,-12));
+	}while(err > 1e-12);
 
 	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
 	
-	printf("\n found optimal values of v_start : [%lf  ,  %lf  ,  %lf]\n", v_start[0], v_start[1] , v_start[2]);
-	printf("err = %lf\n",sqrt(err));
-	
+	// save the trajectory
+	double abserror = trajectory(&v_start, true);
+	printf("\n optimal: v_start = {%.15f, %.15f, %.15f},      err = %g\n", v_start[0],v_start[1],v_start[2], abserror);	
 	
 	return(0);
 }
