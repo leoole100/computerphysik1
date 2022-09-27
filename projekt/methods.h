@@ -35,9 +35,6 @@ double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3]);
 void makeJacobian();
 double newtonstep();
 double trajectory(double (*v_p)[3],  bool save);
-void calcHesse();
-double newtonstepMitHesse();
-
 
 // functions  //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -176,6 +173,10 @@ double trajectory(double (*v_p)[3],  bool save)
 		double errpoints[NUM_ENDS][3], errvelocitys[NUM_ENDS][3];
 		int errdaycounter = 0;
 
+		// open spacecraft file
+		FILE * spacecraft_file = fopen("data/spacecraft.csv", "r+");
+		double error = 0;
+
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
 
@@ -243,7 +244,19 @@ double trajectory(double (*v_p)[3],  bool save)
 
 			}
 
-			if(day == end_days[errdaycounter])
+			// add to error integral
+			// read spacecraft position
+			double spacecraft_coords[3];
+			for (size_t j = 0; j < 3; j++){
+				if(fscanf(spacecraft_file, "%lf", &spacecraft_coords[j])==0){
+					perror("fscanf");
+					exit(EXIT_FAILURE);
+				}
+			}
+			error += (pow(r[0]-spacecraft_coords[0],2) + pow(r[1]-spacecraft_coords[1],2) + pow(r[2]-spacecraft_coords[2],2))/TMAX;
+
+
+			/*if(day == end_days[errdaycounter])
 			{
 				for(int i = 0 ; i < 3 ; i++)
 				{
@@ -251,7 +264,7 @@ double trajectory(double (*v_p)[3],  bool save)
 					errvelocitys[errdaycounter][i] = v[i];
 				}
 				errdaycounter++;
-			}
+			}*/
 
 				
 			// check if spacecraft is close to boundary
@@ -288,7 +301,12 @@ double trajectory(double (*v_p)[3],  bool save)
 		}
 		printf("}\n");*/
 
-		return(errfunction(&errpoints, &errvelocitys));
+
+		//return(errfunction(&errpoints, &errvelocitys));
+
+		//close spacecraft file
+		fclose(spacecraft_file);
+		return(error);
 			
 }
 
@@ -319,11 +337,12 @@ double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3])
 	for(int i = 0 ; i < 3 ; i++){
 		errvec[i] = 0;
 		for(int j = 0 ; j < NUM_ENDS ; j++){
-			errvec[i] += (powf(v_end[j][i]-(*v)[j][i],18) + powf(r_end[j][i]-(*r)[j][i],18));
+			//errvec[i] += powf(v_end[j][i]-(*v)[j][i],2);// + powf(r_end[j][i]-(*r)[j][i],2);
+			errvec[i] += fabs(v_end[j][i]-(*v)[j][i]);// + powf(r_end[j][i]-(*r)[j][i],2);
 		}
 	}
 		
-		
+	// calculate magnitude square of error vector
 	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
 	//printf("%lf\n",abserr);
 	return abserr;
@@ -505,161 +524,3 @@ double newtonstep(int ni)
 	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }
-
-void calcHesse()
-{
-	for(int j = 0 ; j < 3 ; j++ )
-	{
-		gradient[j] = 0;
-		v_start[j]+=h;
-		err = trajectory(&v_start, false);
-		gradient[j] = err;
-
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			Hessematrix[j][i] -= err;
-		}
-		v_start[j]-=h;
-		err = trajectory(&v_start, false);
-		gradient[j] = err;
-		gradient[j]/=h;
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			Hessematrix[j][i] += err;
-			Hessematrix[j][i] /= h;
-		}
-
-	}
-	for(int k = 0 ; k < 3 ; k++)
-	{
-		v_start[k]+=h;
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			v_start[i]+=h;
-			err = trajectory(&v_start, false);
-			Hessematrix[i][k] += err/h; 
-			v_start[i]-=h;
-			err = trajectory(&v_start, false);
-			Hessematrix[i][k] -= err/h; 
-			Hessematrix[i][k] /=h; 
-		
-		}
-		v_start[k]-=h;
-	}
-	err = trajectory(&v_start, false);
-		
-}
-
-double newtonstepMitHesse(int ni)
-{
-	/*
-	v_start^(n) := (v_start[0] , v_start[1] , v_start[2])
-	Calculates Newtonstep v_start^(n+1) = v_start^(n) - (Derr(v_start^(n)))^-1 * err(v_start^(n))	
-	Therefore the following System of equations is solved with Jacobi iteration (deltav_n := (delta v_x , delta v_y , delta v_z)):
-	Derr(v_start^(n)) * deltav_n    =     -err(v_start^(n)) 
-	
-	then set:
-	v_start^(n+1) = v_start^(n) + deltav_n
-	inputs:
-		None
-	outputs:
-		None
-	—————————————————————————————————————————————————-
-	*/
-
-
-    /* numerical solution of equation system (doesn't work)
-    -----------------------------------------------------------------------------------------------------------
-    //calculate Jacobian Matrix Derr of the errorfunction
-	calcJacobian();
-	//delta_s vector to solve the linear system of equation with Jacobi iteration method
-	double deltav_n[3] = {-0. , -0.0 , -0.0};
-	double deltav_np[3] = {0 , 0 , 0}; 
-	//sles := Derr*deltas, if | sles- |^2 < 1e-7 break; because linear equation system is solved.
-	
-	double abserrles = 100;
-	//initial guess of the solution of the linear system of equations
-	do{	
-		
-			for(int j = 0 ; j < 3 ; j++)
-			{
-				printf("errvec[%d] = %lf\n", j, errvec[j]);
-			
-		}
-		//do Jacobi step
-		deltav_np[0] =  (-errvec[0]-Jacobian[0][1]*deltav_n[1]-Jacobian[0][2]*deltav_n[2])/Jacobian[0][0]; 
-		deltav_np[1] =  (-errvec[1]-Jacobian[1][0]*deltav_n[0]-Jacobian[1][2]*deltav_n[2])/Jacobian[1][1]; 
-		deltav_np[2] =  (-errvec[2]-Jacobian[2][0]*deltav_n[0]-Jacobian[2][1]*deltav_n[1])/Jacobian[2][2]; 
-		deltav_n[0] = deltav_np[0];
-		deltav_n[1] = deltav_np[1];
-		deltav_n[2] = deltav_np[2];
-		
-        double sles[3] = {0.0 , 0.0 , 0.0};
-		//calculate Derr(v_start^(n))*(s_x,s_y,s_z)
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			for(int j = 0 ; j < 3 ; j++)
-			{
-				sles[i]+=(Jacobian[i][j]*deltav_n[j]);
-			}
-		}
-		abserrles = (sles[0]+errvec[0])*(sles[0]+errvec[0])+(sles[1]+errvec[1])*(sles[1]+errvec[1])+(sles[2]+errvec[2])*(sles[2]+errvec[2]);
-		//check if abserrless is finte else exit programm and display error message
-		if(isinf(abserrles) || isnan(abserrles))
-		{
-			printf("error couldnt perform Newtonstep abserror exceeds limits %lf\n",abserrles);
-			exit(0);
-		}
-	}while(abserrles > powf(10,-8));
-	----------------------------------------------------------------------------------------------------------------------------*/
-
-        //calculate Jacobian Matrix Derr of the errorfunction
-	calcHesse();
-
-		
-  	double solution[3] = {0 , 0 , 0};
-
-	//Gauss Algorithmus für Dreiecksform
-        for(int i = 0 ; i < 3 ; i++)
-        {   
-            double fac1 = Hessematrix[i][i];
-            if(Hessematrix[i][i] != 0)
-            {
-                for(int j = 0 ; j < 3 ; j++)
-                {
-                    Hessematrix[i][j]/=fac1;
-                }
-                gradient[i]/=fac1;
-            }
-            for(int j = i+1 ; j < 3 ; j++)
-            {
-                double fac2 = Hessematrix[j][i];
-                gradient[j]-=gradient[i]*fac2;
-                for(int k = 0 ; k < 3 ; k++)
-                {   
-                    Hessematrix[j][k]-=Hessematrix[i][k]*fac2;
-                }
-            }
-        }
-
-	//solve System 
-        for(int i = 2 ; i > 0 ; i--)
-        {
-            for(int j = 0 ; j < i ; j++)
-            {
-                double fac = Hessematrix[j][i];                   
-                Hessematrix[j][i]=0;
-                gradient[j]-=gradient[i]*fac;
-            }
-        }
-	double gain = 0.025;
-    v_start[0]-=gain*gradient[0];
-	v_start[1]-=gain*gradient[1];
-	v_start[2]-=gain*gradient[2];
-
-	//solve boundary value problem with new initial velocity
-	double abserror = trajectory(&v_start, true);
-	printf("%4d. iteration: v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
-    return(abserror);
-}
-
