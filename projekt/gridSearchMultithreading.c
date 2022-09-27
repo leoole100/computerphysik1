@@ -11,24 +11,24 @@
 #include "methods.h"
 #include <pthread.h>
 
-#define NUM_THREADS 6
+#define NUM_THREADS 4
 
 void *thread(void *arg);
 
-double dv = 1e-6; //stepsize
-double steps[3] = {20, 5, 5};
+const double dv = 1e-6; //stepsize
+const double steps[3] = {20, 20, 20};
 
-const double coordinateSystem[3][3] = {
+/*const double coordinateSystem[3][3] = {
 	{-0.919601, 0.36784, -0.13794},
 	{0,0,1},
 	{0.36784, 0.919601, 0.} // cross product of the above
-};
+};*/
 
-/*const double coordinateSystem[3][3] = {
+const double coordinateSystem[3][3] = {
 	{1,0,0},
 	{0,1,0},
 	{0,0,1}
-};*/
+};
 
 
 int main(){
@@ -63,20 +63,20 @@ void *thread(void *arg){
 	double v[3];
 
 	for(
-		int i = (steps[0] + steps[0])/NUM_THREADS * n; 
-		i < (steps[0] + steps[0])/NUM_THREADS * (n+1); 
+		int i = 2*steps[0]/NUM_THREADS * n; 
+		i < 2*steps[0]/NUM_THREADS * (n+1); 
 	i++){
-		for(int j = 0 ; j < steps[1] + steps[1] ; j++)
+		// print progress of the thread 0
+		if(n==0){
+
+			// print progress in percent
+			printf("	%.01f %%\n", 100. * i/(2*steps[0]/NUM_THREADS));
+		}
+
+		for(int j = 0 ; j < 2*steps[1] ; j++)
 		{
-			for(int k = 0 ; k < steps[2] + steps[2] ; k++)
+			for(int k = 0 ; k < 2*steps[2] ; k++)
 			{
-
-				
-				// print progress of the thread 0
-				if(n==0){
-					printf("	%f", 100. * (i) / (2*(steps[0] + steps[0])/NUM_THREADS));
-				}
-
 				// set v to v_start
 				v[0] = v_start[0];
 				v[1] = v_start[1];

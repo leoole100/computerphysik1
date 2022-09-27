@@ -29,7 +29,7 @@ double errvec[3]; // output of jacobian and input of newtonstep
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
-double errfunction(double (*r)[3][3], double (*v)[3][3]);
+double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3]);
 void makeJacobian();
 double newtonstep();
 double trajectory(double (*v_p)[3],  bool save);
@@ -251,13 +251,13 @@ double trajectory(double (*v_p)[3],  bool save)
 			}
 
 				
-			/*// check if spacecraft is close to boundary
-			for (size_t i = 0; i < NUM_ENDS; i++){
+			// check if spacecraft is close to boundary
+			/*for (size_t i = 0; i < NUM_ENDS; i++){
 				// calculate distance between r_end[i] and r
 				tmp[0] = r_end[i][0] - r[0];
 				tmp[1] = r_end[i][1] - r[1];
 				tmp[2] = r_end[i][2] - r[2];
-				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
+				double r_norm = tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2];
 
 				// check if distance is smaller than current minimum
 				if(r_norm < end_min[i]){
@@ -269,14 +269,21 @@ double trajectory(double (*v_p)[3],  bool save)
 					errvelocitys[i][1] = v[1];
 					errvelocitys[i][2] = v[2];
 				}
-			}*/			
+			}*/
 		}
-		//printf("closing files\n");	
+
 		// close planet files
 		for (size_t i = 0; i < planet_num; i++){
 			fclose(planet_files[i]);
 		}
 		if(save){ fclose(trajectory_file);}
+
+		//print errpoints
+		/*printf("errpoints:\n	{");
+		for (size_t i = 0; i < NUM_ENDS; i++){
+			printf("{%lf, %lf, %lf}, ", errpoints[i][0], errpoints[i][1], errpoints[i][2]);
+		}
+		printf("}\n");*/
 
 		return(errfunction(&errpoints, &errvelocitys));
 			
@@ -289,7 +296,7 @@ double trajectory(double (*v_p)[3],  bool save)
  * @param v 
  * @return double 
  */
-double errfunction(double (*r)[3][3], double (*v)[3][3])
+double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3])
 {
 	/*
 	valculates errorvector:
@@ -308,8 +315,9 @@ double errfunction(double (*r)[3][3], double (*v)[3][3])
 
 	for(int i = 0 ; i < 3 ; i++){
 		errvec[i] = 0;
-		for(int j = 0 ; j < 3 ; j++){
-			errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
+		for(int j = 0 ; j < NUM_ENDS; j++){
+			//errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
+			errvec[i] += pow(r_end[j][i]-(*r)[j][i], 2);
 		}
 	}
 		
@@ -484,13 +492,15 @@ double newtonstep(int ni)
 		}
 	}
 
-	v_start[0]-=errvec[0];
-	v_start[1]-=errvec[1];
-	v_start[2]-=errvec[2];
+	double gain = 1;
+
+	v_start[0]-=gain*errvec[0];
+	v_start[1]-=gain*errvec[1];
+	v_start[2]-=gain*errvec[2];
 
 	//solve boundary value problem with new initial velocity
 	double abserror = trajectory(&v_start, false);
-	printf("%4d. iteration: v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
+	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }
 
