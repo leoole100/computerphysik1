@@ -312,7 +312,7 @@ double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3])
 	for(int i = 0 ; i < 3 ; i++){
 		errvec[i] = 0;
 		for(int j = 0 ; j < NUM_ENDS ; j++){
-			errvec[i] += ((v_end[j][i]-(*v)[j][i]) + (r_end[j][i]-(*r)[j][i]));
+			errvec[i] += (powf(v_end[j][i]-(*v)[j][i],18) + powf(r_end[j][i]-(*r)[j][i],18));
 		}
 	}
 		
