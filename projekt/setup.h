@@ -17,7 +17,7 @@
 #define h 1e-7 //constant needed for calculation of difference qoutioent f'(x)=(f(x+h)-f(x))/h
 #define G  1.488e-34 // in AU^3 / kg day^2
 #define NEWTON_STEPS 100
-#define NEWTON_PRECISION 1e-15
+#define NEWTON_PRECISION 1e-40
 //#define  double m =  367.0; // in kg // kuertzt sich eingenlicht raus
 
 
