@@ -11,6 +11,10 @@
 #include "methods.h"
 #include <omp.h>
 
+//Methode mit Hessematrix
+double Hessematrix[3][3];
+double gradient[3];
+
 void calcHesse();
 double newtonstepMitHesse();
 

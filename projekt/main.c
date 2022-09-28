@@ -29,13 +29,11 @@ int main()
 		printf("\n error couldn't find optimal solution\n");
 		exit(0);
 	}
-	err = newtonstepMitHesse(newtoniterationnumber);
+	err = newtonstep(newtoniterationnumber);
 	newtoniterationnumber++;
 	
 	}while(err > NEWTON_PRECISION);
 
-	//trajectory(-0.009717 , 0.021646 , 0.000793, false);
-	
 	// save the trajectory
 	double abserror = trajectory(&v_start, true);
 	printf("\n optimal: v_start = {%.15f, %.15f, %.15f},      err = %g\n", v_start[0],v_start[1],v_start[2], abserror);	

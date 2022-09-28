@@ -23,10 +23,7 @@ double err = 0;
 double Jacobian[3][3];
 //counter of the newton steps
 int newtoniterationnumber = 1;
-double errvec[3]; // output of jacobian and input of newtonstep
-//Methode mit Hessematrix
-double Hessematrix[3][3];
-double gradient[3];
+double errvec[3]; // input of jacobian and input of newtonstep
 
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
@@ -180,10 +177,6 @@ double trajectory(double (*v_p)[3],  bool save)
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
 
-			// save current position
-			if(save){ fprintf(trajectory_file, "%g %g %g\n", r[0], r[1], r[2]); }
-
-
 			// save current planet positions
 			for (size_t i = 0; i < planet_num; i++){
 				for (size_t j = 0; j < 3; j++){
@@ -244,6 +237,24 @@ double trajectory(double (*v_p)[3],  bool save)
 
 			}
 
+			// calculate energy
+			double energy = 0.5*(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+			for (size_t i = 0; i < planet_num; i++){
+				// calculate distance
+				tmp[0] = planet_coords_next[i][0] - r[0];
+				tmp[1] = planet_coords_next[i][1] - r[1];
+				tmp[2] = planet_coords_next[i][2] - r[2];
+
+				// calculate energy
+				double r_norm = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2]);
+				energy += -G*planet_weights[i]/r_norm;
+			}
+
+			// save current position
+			if(save){ fprintf(trajectory_file, "%g %g %g %g\n", r[0], r[1], r[2], energy); }
+
+			// FOR ERROR FUNCTION ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 			// add to error integral
 			// read spacecraft position
 			double spacecraft_coords[3];
@@ -254,9 +265,14 @@ double trajectory(double (*v_p)[3],  bool save)
 				}
 			}
 			error += (pow(r[0]-spacecraft_coords[0],2) + pow(r[1]-spacecraft_coords[1],2) + pow(r[2]-spacecraft_coords[2],2))/TMAX;
+			errvec[0] += pow(r[0]-spacecraft_coords[0],2)/TMAX;
+			errvec[1] += pow(r[1]-spacecraft_coords[1],2)/TMAX;
+			errvec[2] += pow(r[2]-spacecraft_coords[2],2)/TMAX;
 
 
-			/*if(day == end_days[errdaycounter])
+			/*
+			// check error at specific days
+			if(day == end_days[errdaycounter])
 			{
 				for(int i = 0 ; i < 3 ; i++)
 				{
@@ -267,7 +283,7 @@ double trajectory(double (*v_p)[3],  bool save)
 			}*/
 
 				
-			// check if spacecraft is close to boundary
+			// check error at closest to specific postions
 			/*for (size_t i = 0; i < NUM_ENDS; i++){
 				// calculate distance between r_end[i] and r
 				tmp[0] = r_end[i][0] - r[0];
@@ -276,7 +292,7 @@ double trajectory(double (*v_p)[3],  bool save)
 				double r_norm = tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2];
 
 				// check if distance is smaller than current minimum
-				if(r_norm < end_min[i]){
+				if(r_nor m < end_min[i]){
 					end_min[i] = r_norm;
 					errpoints[i][0] = r[0];
 					errpoints[i][1] = r[1];
@@ -294,6 +310,8 @@ double trajectory(double (*v_p)[3],  bool save)
 		}
 		if(save){ fclose(trajectory_file);}
 
+		fclose(spacecraft_file);
+
 		//print errpoints
 		/*printf("errpoints:\n	{");
 		for (size_t i = 0; i < NUM_ENDS; i++){
@@ -305,9 +323,7 @@ double trajectory(double (*v_p)[3],  bool save)
 		//return(errfunction(&errpoints, &errvelocitys));
 
 		//close spacecraft file
-		fclose(spacecraft_file);
 		return(error);
-			
 }
 
 /**

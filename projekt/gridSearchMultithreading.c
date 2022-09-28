@@ -15,8 +15,8 @@
 
 void *thread(void *arg);
 
-const double dv = 1e-5; //stepsize
-const double steps[3] = {10, 10, 10};
+const double dv = 1e-8; //stepsize
+const double steps[3] = {20, 20, 10};
 
 /*const double coordinateSystem[3][3] = {
 	{-0.919601, 0.36784, -0.13794},
@@ -66,13 +66,7 @@ void *thread(void *arg){
 		int i = 2*steps[0]/NUM_THREADS * n; 
 		i < 2*steps[0]/NUM_THREADS * (n+1); 
 	i++){
-		// print progress of the thread 0
-		if(n==0){
-
-			// print progress in percent
-			printf("	%.01f %%\n", 100. * i/(2*steps[0]/NUM_THREADS));
-		}
-
+		
 		for(int j = 0 ; j < 2*steps[1] ; j++)
 		{
 			for(int k = 0 ; k < 2*steps[2] ; k++)
@@ -89,6 +83,12 @@ void *thread(void *arg){
 				
 				double err = trajectory(&v, false);
 				fprintf(results_file, "%d %d %d %.10f %.10f %.10f %g \n", i, j, k, v[0], v[1], v[2], err);
+
+				// print progress of the thread 0
+				if(n==0){
+					// print progress in percent
+					printf("	%.01f %%\n", 100. * i/(2*steps[0]/NUM_THREADS) + 100. * j/(2*steps[0]/NUM_THREADS * 2*steps[1]) + 100. * k/(2*steps[0]/NUM_THREADS * 2*steps[1] * 2*steps[2]));
+				}
 			}
 		}
 	}
