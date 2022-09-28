@@ -174,7 +174,7 @@ double trajectory(double (*v_p)[3],  bool save)
 		// open spacecraft file
 		FILE * spacecraft_file = fopen("data/spacecraft.csv", "r+");
 		double error = 0;
-		double fehler[NUM_ENDS];
+		//double fehler[NUM_ENDS];
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
 
@@ -342,6 +342,7 @@ double trajectory(double (*v_p)[3],  bool save)
 
 		//close spacecraft file
 		return(error);
+	//return(errfunction(&errpoints, &errvelocitys));
 }
 
 /**
