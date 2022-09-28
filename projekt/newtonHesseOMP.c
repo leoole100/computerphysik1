@@ -212,13 +212,13 @@ double newtonstepMitHesse(int ni)
                 gradient[j]-=gradient[i]*fac;
             }
         }
-	double gain = 1;
+	double gain = 10;
     v_start[0]-=gain*gradient[0];
 	v_start[1]-=gain*gradient[1];
 	v_start[2]-=gain*gradient[2];
 
 	//solve boundary value problem with new initial velocity
 	double abserror = trajectory(&v_start, false);
-	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
+	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f}, err = %e\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }

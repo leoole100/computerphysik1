@@ -1,10 +1,13 @@
-default:main
+default: main
 
 trajectory: trajectory.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
 	
-main: main.c
+
+main: newton
+
+newton: main.c
 	gcc -O3 $< -o $@.out -lm
 	./$@.out
 
@@ -21,3 +24,4 @@ gradientDescent: gradientDescent.c
 newtonHesseOMP: newtonHesseOMP.c
 	gcc -O3 $< -o $@.out -lm -fopenmp
 	./$@.out
+

@@ -13,16 +13,22 @@
 
 double gradient(double (*v_p)[3], double (*gradient)[3]);
 
-int main()
-	{
-		
-	// loop    /////////////////////////////////////////////////////////////////////////////////////////////////////
-	printf("begin main\n");
+int main(){
 	
-	
+	// adding symmetric random noise to the initial velocity
+	/*double randomInterval[3] = {0.001, 0.01, 0.0001};
+	v_start[0] += randomInterval[0] * (2.0 * rand() / RAND_MAX - 1.0);
+	v_start[1] += randomInterval[1] * (2.0 * rand() / RAND_MAX - 1.0);
+	v_start[2] += randomInterval[2] * (2.0 * rand() / RAND_MAX - 1.0);
+
+	printf("v_start = {%.15f, %.15f, %.15f}\n\n", v_start[0],v_start[1],v_start[2]);*/
+
 
 	double err = 100;
 	unsigned int iter = 1;
+
+	double v_smallest[3];
+	double err_smallest = err;
 
 	do{
 		double grad[3];
@@ -30,7 +36,14 @@ int main()
 
 		//printf("gradient = {%.15f, %.15f, %.15f}\n", grad[0], grad[1], grad[2]);
 
-		printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f},      err = %g\n", iter,v_start[0],v_start[1],v_start[2], err);
+		printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f}, err = %e / %e\n", iter,v_start[0],v_start[1],v_start[2], err, err_smallest);
+
+		if(err<err_smallest){
+			err_smallest = err;
+			v_smallest[0] = v_start[0];
+			v_smallest[1] = v_start[1];
+			v_smallest[2] = v_start[2];
+		}
 
 		double gain = 1e-13;
 		v_start[0] -= gain * grad[0];
@@ -42,8 +55,8 @@ int main()
 	}while(err > NEWTON_PRECISION && iter < NEWTON_STEPS);
 
 	// save the trajectory
-	err = trajectory(&v_start, true);
-	printf("\n optimal: v_start = {%.15f, %.15f, %.15f},      err = %g\n", v_start[0],v_start[1],v_start[2], err);	
+	err = trajectory(&v_smallest, true);
+	printf("\n optimal: v_start = {%.15f, %.15f, %.15f}, err = %e\n", v_smallest[0],v_smallest[1],v_smallest[2], err_smallest);	
 	
 	return(0);
 }

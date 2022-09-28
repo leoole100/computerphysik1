@@ -30,7 +30,7 @@ __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3]);
 void makeJacobian();
-double newtonstep();
+double newtonstep(int newtoniterationnumber);
 double trajectory(double (*v_p)[3],  bool save);
 
 // functions  //////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,9 +270,9 @@ double trajectory(double (*v_p)[3],  bool save)
 			errvec[2] += pow(r[2]-spacecraft_coords[2],2)/TMAX;
 
 
-			/*
+			
 			// check error at specific days
-			if(day == end_days[errdaycounter])
+			/*if(day == end_days[errdaycounter])
 			{
 				for(int i = 0 ; i < 3 ; i++)
 				{
@@ -353,8 +353,8 @@ double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3])
 	for(int i = 0 ; i < 3 ; i++){
 		errvec[i] = 0;
 		for(int j = 0 ; j < NUM_ENDS ; j++){
-			//errvec[i] += powf(v_end[j][i]-(*v)[j][i],2);// + powf(r_end[j][i]-(*r)[j][i],2);
-			errvec[i] += fabs(v_end[j][i]-(*v)[j][i]);// + powf(r_end[j][i]-(*r)[j][i],2);
+			errvec[i] += powf(r_end[j][i]-(*r)[j][i],2) + powf(v_end[j][i]-(*v)[j][i],2);
+			errvec[i] += fabs(r_end[j][i]-(*r)[j][i]);
 		}
 	}
 		
@@ -529,7 +529,7 @@ double newtonstep(int ni)
 		}
 	}
 
-	double gain = 1;
+	double gain = .1;
 
 	v_start[0]-=gain*errvec[0];
 	v_start[1]-=gain*errvec[1];
@@ -537,6 +537,6 @@ double newtonstep(int ni)
 
 	//solve boundary value problem with new initial velocity
 	double abserror = trajectory(&v_start, false);
-	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
+	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f}, err = %e\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }
