@@ -164,6 +164,7 @@ double trajectory(double (*v_p)[3],  bool save)
 		v[0] = (*v_p)[0];
 		v[1] = (*v_p)[1];
 		v[2] = (*v_p)[2];
+		
 
 		// for keeping track of the right boundary condition
 		double end_min[NUM_ENDS] = {100,100,100};
@@ -173,7 +174,7 @@ double trajectory(double (*v_p)[3],  bool save)
 		// open spacecraft file
 		FILE * spacecraft_file = fopen("data/spacecraft.csv", "r+");
 		double error = 0;
-
+		double fehler[NUM_ENDS];
 		//leap frog	
 		for(int day = 0; day < TMAX; day++){
 
@@ -234,6 +235,23 @@ double trajectory(double (*v_p)[3],  bool save)
 				r[0] += v[0] / SUB_STEPS;
 				r[1] += v[1] / SUB_STEPS;
 				r[2] += v[2] / SUB_STEPS;
+				
+				/*//Ab hier Randbedingungen unabhängig von Tagen
+				for(int l = 0 ; l < NUM_ENDS ; l++)
+				{
+					double a = fabs(r[0]-r_end[l][0])+fabs(r[1]-r_end[l][1])+fabs(r[2]-r_end[l][2]);+fabs(v[0]-v_end[l][0])+fabs(v[1]-v_end[l][1])+fabs(v[2]-v_end[l][2]);
+					if(a < fehler[l])
+					{
+						errpoints[l][0]=r[0];
+						errpoints[l][1]=r[1];
+						errpoints[l][2]=r[2];
+						errvelocitys[l][0]=v[0];
+						errvelocitys[l][1]=v[1];
+						errvelocitys[l][2]=v[2];
+						fehler[l]=a;
+					}
+				}
+				*/
 
 			}
 
