@@ -219,6 +219,6 @@ double newtonstepMitHesse(int ni)
 
 	//solve boundary value problem with new initial velocity
 	double abserror = trajectory(&v_start, false);
-	printf("%4d. iteration: v_start = {%.15f, %.15f, %.15f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
+	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f},      err = %g\n", ni,v_start[0],v_start[1],v_start[2], abserror);
     return(abserror);
 }

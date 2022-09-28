@@ -16,8 +16,8 @@
 #define SUB_STEPS 1e3
 #define h 1e-12 //constant needed for calculation of difference qoutioent f'(x)=(f(x+h)-f(x))/h
 #define G  1.488e-34 // in AU^3 / kg day^2
-#define NEWTON_STEPS 100
-#define NEWTON_PRECISION 1e-4
+#define NEWTON_STEPS 1000
+#define NEWTON_PRECISION 1e-6
 //#define  double m =  367.0; // in kg // kuertzt sich eingenlicht raus
 
 
@@ -32,8 +32,8 @@ const double r_start[3]={0.9018647801517535, 0.4249622724991888, 0.0074823307969
 //initial guess of start velocity, parameter that needs to be optimized
 //double v_start[3] ={-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
 //double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; //manually found value for swing by
-double v_start[3] = {-0.0094621291, 0.0217432123, 0.0008138193}; // best currently known guess
-//double v_start[3] ={-0.00946213, 0.0217432, 0.000813819};
+//double v_start[3] = {-0.0094621291, 0.0217432123, 0.0008138193}; // best currently known guess
+double v_start[3] = {-0.009461094504217, 0.021742797041014, 0.000813950267309};
 
 //boundary conditions for the error function
 /*#define NUM_ENDS 4

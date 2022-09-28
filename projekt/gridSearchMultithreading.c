@@ -15,7 +15,7 @@
 
 void *thread(void *arg);
 
-const double dv = 1e-8; //stepsize
+const double dv = 5e-8; //stepsize
 const double steps[3] = {20, 20, 10};
 
 /*const double coordinateSystem[3][3] = {
