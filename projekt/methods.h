@@ -310,7 +310,7 @@ double trajectory(double (*v_p)[3],  bool save)
 				double r_norm = tmp[0]*tmp[0] + tmp[1]*tmp[1] + tmp[2]*tmp[2];
 
 				// check if distance is smaller than current minimum
-				if(r_nor m < end_min[i]){
+				if(r_norm < end_min[i]){
 					end_min[i] = r_norm;
 					errpoints[i][0] = r[0];
 					errpoints[i][1] = r[1];

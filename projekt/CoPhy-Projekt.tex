@@ -13,22 +13,38 @@
 \end{abstract}
 
 \section{Einleitung}
+Es wurde die Ulysses Raumfahrtmission gewählt, da nur ein Swing-by durchgeführt wurde und die Flugbahn verfügbar\footnote{\url{https://www.cosmos.esa.int/web/ulysses/mission-trajectory}} ist.	
 
 \section{Trajektorie}
 \begin{figure}[h!]
 	\centering
 	\includegraphics{img/trajectory.pdf}
+	\caption{Abbildung der historischen Trajektorie, der simulierten Flugbahn und der relevanten Himmelskörpern}
+	\label{fig:trajectory}
 \end{figure}
+
+Um die Flugbahn zu simulieren, wird die wirkende Gravitationskraft benötigt.
+Zu Vereinfachung werden nur die Sonne, die Erde und der Jupiter berücksichtigt.
+Die Planeten Daten wurden aus Mathematica\footnote{Wolfram Research, Inc., Wolfram|Alpha Notebook Edition, Champaign, IL (2022).} in täglicher Auflösung exportiert, um die Datenmenge zu reduzieren.
+Diese Koordinaten werden in der Simulation linear über den Tag interpoliert.
+In Abbildung \ref{fig:trajectory} sind die Positionen der Planeten, die Historische Trajektorie und ein simulierte Flugbahn dargestellt.
+
+Für die Simulation wurde 2800 Tage betrachtet, was ungefähr 474 Tage für der Transfer zum Jupiter und dann einen Vollständigen Orbit nach dem Swing-by entspricht.
+Jeder dieser Tage wurde in 1000 Schritten aufgeteilt, da bei mehr Schritten sich die Ergebnisse nicht mehr verändert haben.
+Für jeden dieser Schritte wurde ein Leap-Frog schritt durchgeführt, um die Position und Geschwindigkeit zu berechnen.
+
+
 \begin{figure}[h!]
 	\centering
 	\includegraphics{img/energy.pdf}
+	\caption{Energie und Geschwindigkeit während des Swing-by Manövers}
 \end{figure}
 
 
 \section{Fehlerfunktionen}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[scale=1.38888]{img/gridSearch.pdf}
+	\includegraphics{img/gridSearch.pdf}
 \end{figure}
 
 
@@ -38,6 +54,11 @@
 \paragraph{Integral des Ort-Fehler-Quadrates}
 
 \section{Optimierung}
+Als Optimierungsparameter wurde die Anfangsgeschwindigkeit gewählt, da diese nur 3 Dimensionen hat und somit leichter zu optimieren ist, als z.B. der Transferorbit.
+Als initialer Wert wurde die echte gemessene Geschwindigkeit verwendet. Die Daten haben aber die Auflösung von $0.01\text{°}$ in einem Sphärischen Heliozentrischen Koordinatensystem.
+Daraus lässt sich eine Unsicherheit der Position von $4\;\text{AU}\cdot\sin 0.01\text{°}\approx 7\cdot 10^{-4}\;\text{AU}$ und eine Unsicherheit der Geschwindigkeit $\sqrt{2}\cdot 7\cdot 10^{-4} \approx 10^{-3}\;\text{AU/day}$.
+Dies ist auf jeden fall viel kleiner, als die nötige Genauigkeit von $10^{-6}$ bis $10^{-8}\;\text{AU/day}$.
+
 \subsection{Newton-Verfahren}
 \subsection{Newton-Hesse-Verfahren}
 \subsection{Gradienten-Verfahren}
