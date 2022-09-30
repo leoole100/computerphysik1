@@ -13,7 +13,8 @@
 \end{abstract}
 
 \section{Einleitung}
-Es wurde die Ulysses Raumfahrtmission gewählt, da nur ein Swing-by durchgeführt wurde und die Flugbahn verfügbar\footnote{\url{https://www.cosmos.esa.int/web/ulysses/mission-trajectory}} ist.	
+Beim Swing-By geht es darum, einen Satelliten gezielt an einem Himmelsobjekt vorbeifliegen zu lassen, damit die wirkende Gravitation den Satelliten auf einen gewünschten Orbit bringt. Dadurch lässt sich der sonst zur Beschleunigung benötigte Treibstoff sparen.\\
+In diesem Bericht geht es um eine historische Raumfahrtmission der ESA, es handelt sich um die Ulysses-Raumfahrtmission. Bei dieser wurde nur ein Swing-by, nämlich am Planeten Jupiter, durchgeführt und die Daten zur Flugbahn sind verfügbar\footnote{\url{https://www.cosmos.esa.int/web/ulysses/mission-trajectory}}. Ziel ist es, mithilfe einer Simulation anhand der Shooting-Methode herauszufinden, wie der Satellit von der Erde aus ins All geschickt werden muss, um einen Swing-By auf den entsprechenden Orbit zu erreichen, und dann den errechneten Orbit mit den historischen Daten zu vergleichen.
 
 \section{Trajektorie}
 \begin{figure}[h!]
@@ -23,15 +24,15 @@ Es wurde die Ulysses Raumfahrtmission gewählt, da nur ein Swing-by durchgeführ
 	\label{fig:trajectory}
 \end{figure}
 
-Um die Flugbahn zu simulieren, wird die wirkende Gravitationskraft benötigt.
-Zu Vereinfachung werden nur die Sonne, die Erde und der Jupiter berücksichtigt.
-Die Planeten Daten wurden aus Mathematica\footnote{Wolfram Research, Inc., Wolfram|Alpha Notebook Edition, Champaign, IL (2022).} in täglicher Auflösung exportiert, um die Datenmenge zu reduzieren.
-Diese Koordinaten werden in der Simulation linear über den Tag interpoliert.
+Um die Flugbahn zu simulieren, muss die wirkende Gravitationskraft berechnet werden.
+Zu Vereinfachung werden nur die Sonne, die Erde und der Jupiter berücksichtigt, weil der Satellit an keinem anderen Planeten nahe vorbeiflog.
+Die Planeten-Daten wurden aus Mathematica\footnote{Wolfram Research, Inc., Wolfram|Alpha Notebook Edition, Champaign, IL (2022).} in gebräuchlicher Auflösung exportiert, um die Datenmenge zu reduzieren.
+Da die Koordinaten nur tageweise vorliegen, werden sie in der Simulation linear über den Tag interpoliert.
 In Abbildung \ref{fig:trajectory} sind die Positionen der Planeten, die Historische Trajektorie und ein simulierte Flugbahn dargestellt.
 
-Für die Simulation wurde 2800 Tage betrachtet, was ungefähr 474 Tage für der Transfer zum Jupiter und dann einen Vollständigen Orbit nach dem Swing-by entspricht.
-Jeder dieser Tage wurde in 1000 Schritten aufgeteilt, da bei mehr Schritten sich die Ergebnisse nicht mehr verändert haben.
-Für jeden dieser Schritte wurde ein Leap-Frog schritt durchgeführt, um die Position und Geschwindigkeit zu berechnen.
+Für die Simulation wurde eine Dauer von 2800 Tagen betrachtet, wobei der Satellit historisch ungefähr 474 Tage für den Transfer zum Jupiter benötigte, und in der restlichen Zeit etwa einen vollständigen Orbit nach dem Swing-By durchlief.
+Jeder dieser Tage wurde in 1000 Zeitschritte aufgeteilt, da bei mehr Schritten sich die Ergebnisse nicht mehr verändert haben.
+Für jeden dieser Schritte wurde ein Leap-Frog-Schritt durchgeführt, um die Position und Geschwindigkeit des Satelliten zu berechnen. Dabei wurden die Positionen der Himmelskörper als vom Satelliten unbeeinflusst angenommen.
 
 
 \begin{figure}[h!]
@@ -75,12 +76,9 @@ Bei dieser Methode muss also der Zeitpunkt des Manövers nicht im Voraus bekannt
 
 
 
-\paragraph{Vergleich der Endgeschwindigkeit und Ortes}
-\paragraph{Mehre Endpunkte zu festen Zeiten}
-\paragraph{Vergleich von Zielpunkten bei nächster Zeit}
-\paragraph{Integral des Ort-Fehler-Quadrates}
 
 \section{Optimierung}
+Die Shooting-Methode besteht nun darin, die Fehlerfunktion für einen gegebenen Orbit auszuwerten, und ausgehend davon den Orbit in irgendeiner Weise anzupassen, um schließlich die Nullstelle der Fehlerfunktion zu finden.
 Als Optimierungsparameter wurde die Anfangsgeschwindigkeit gewählt, da diese nur 3 Dimensionen hat und somit leichter zu optimieren ist, als z.B. der Transferorbit.
 Als initialer Wert wurde die echte gemessene Geschwindigkeit verwendet. Wichtig war vor allem, eine Anfangsgeschwindigkeit zu wählen, für welche der Satellit möglichst nahe am Jupiter vorbeifliegt, um die Laufzeit des Suchalgorithmus zu verringern. \\
 Die historischen Daten liegen aber in Form von Kooridinaten in einem sphärischen heliozentrischen Koordinatensystem vor und haben eine Auflösung von $0.01\text{°}$.
