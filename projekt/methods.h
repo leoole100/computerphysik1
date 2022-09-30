@@ -161,10 +161,14 @@ double trajectory(double (*v_p)[3],  bool save)
 		r[0] = r_start[0];
 		r[1] = r_start[1];
 		r[2] = r_start[2];
+		// for verlet:	
+		/*v[0] = r_start[0] - (*v_p)[0]/SUB_STEPS;
+		v[1] = r_start[1] - (*v_p)[1]/SUB_STEPS;
+		v[2] = r_start[2] - (*v_p)[2]/SUB_STEPS;*/
+		// for leapfrog
 		v[0] = (*v_p)[0];
 		v[1] = (*v_p)[1];
 		v[2] = (*v_p)[2];
-		
 
 		// for keeping track of the right boundary condition
 		double end_min[NUM_ENDS] = {100,100,100};
@@ -235,7 +239,20 @@ double trajectory(double (*v_p)[3],  bool save)
 				r[0] += v[0] / SUB_STEPS;
 				r[1] += v[1] / SUB_STEPS;
 				r[2] += v[2] / SUB_STEPS;
-				
+
+				// Verlet step
+				/*tmp[0] = 2.0*r[0]+ pow(SUB_STEPS,-2)*a[0]-v[0];
+				tmp[1] = 2.0*r[1]+ pow(SUB_STEPS,-2)*a[1]-v[1];
+				tmp[2] = 2.0*r[2]+ pow(SUB_STEPS,-2)*a[2]-v[2];
+				v[0] = r[0];
+				v[1] = r[1];
+				v[2] = r[2];
+				r[0] = tmp[0];
+				r[1] = tmp[1];
+				r[2] = tmp[2];*/
+
+
+
 				/*//Ab hier Randbedingungen unabhängig von Tagen
 				for(int l = 0 ; l < NUM_ENDS ; l++)
 				{
@@ -256,7 +273,8 @@ double trajectory(double (*v_p)[3],  bool save)
 			}
 
 			// calculate energy
-			double energy = 0.5*(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+			//double energy = 0.5*(pow((r[0]-v[0])*SUB_STEPS,2)+pow((r[1]-v[1])*SUB_STEPS,2)+pow((r[2]-v[2])*SUB_STEPS,2)); // verlet
+			double energy = 0.5*(pow(v[0],2)+pow(v[1],2)+pow(v[2],2)); // for newton
 			for (size_t i = 0; i < planet_num; i++){
 				// calculate distance
 				tmp[0] = planet_coords_next[i][0] - r[0];
