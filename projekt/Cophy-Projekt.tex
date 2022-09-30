@@ -60,16 +60,16 @@ Der Ort allein als Vergleichswert reichte nicht aus, da das Programm sonst eine 
 
 \subsection{Mehre Endpunkte zu festen Zeiten}
 
-Eine andere Methode ist der Vergleich der \textit{Ort}skoordinaten nach dem Swing-By \textit{zu mehreren Zeitpunkten}, dafür aber \textit{ohne Vergleich der Geschwindigkeiten}. Der Zielorbit wird nun also durch eine Reihe an zu erreichenden Wegpunkten definiert, die zu bestimmter Zeit zu erreichen sind.
+Eine andere Methode ist der Vergleich der \textit{Ort}skoordinaten nach dem Swing-By \textit{zu mehreren Zeitpunkten}, dafür aber \textit{ohne Vergleich der Geschwindigkeiten}. Der Zielorbit wird nun also durch eine Reihe an Wegpunkten definiert, die zu bestimmter Zeit zu erreichen sind.
 
 \subsection{Integral des Ort-Fehler-Quadrates}
 
-
+Bei dieser Fehlerfunktion wurde über ein Zeitintervall der Abstand zu den entsprechenden Wegpunkten des Zielorbits errechnet, und die Abstände wurden diesmal quadratisch aufaddiert. Als diskrete Annäherung des Integrals des Fehlerquadrats liefert dies eine Bewertung des Orbits, indem die Fläche zwischen errechnetem und Zielorbit betrachtet wird, das Quadrieren dient der stärkeren Gewichtung einzelner größerer Abweichungen gegenüber vieler leichter Abweichungen.
 
 
 \subsection{Vergleich von Zielpunkten bei nächster Zeit}
 
-Um die Tatsache, dass in der Realität bei der Planung eines Swing-By-Manövers wahrscheinlich keine passenden Daten vorlägen, nicht völlig außer Acht zu lassen, wurden bei der dritten Fehlerfunktion einige Punkte auf dem Wunsch-Orbit ausgewählt - in unserem Fall genau solche, die in den historischen Daten vorlagen, aber es hätten beliebige Punkte sein können. Und dann wurde beim Berechnen der Trajektorie bei jedem Zeitschritt der aktuelle Abstand zu jedem der ausgewählten Punkte gemessen. Der Wert wurde mit einem gespeicherten Wert verglichen, und dieser überschrieben, falls der aktuelle Wert kleiner war. So wurde zu jedem der ausgewählten Punkte der nächstgelegene Punkt der aktuellen Trajektorie gefunden.\\
+Um die Tatsache, dass in der Realität bei der Planung eines Swing-By-Manövers wahrscheinlich keine passenden Daten vorlägen, nicht völlig außer Acht zu lassen, wurden bei der vierten Fehlerfunktion einige Punkte auf dem Wunsch-Orbit ausgewählt - in unserem Fall genau solche, die in den historischen Daten vorlagen, aber es hätten beliebige Punkte sein können. Und dann wurde beim Berechnen der Trajektorie bei jedem Zeitschritt der aktuelle Abstand zu jedem der ausgewählten Punkte gemessen. Der Wert wurde mit einem gespeicherten Wert verglichen, und dieser überschrieben, falls der aktuelle Wert kleiner war. So wurde zu jedem der ausgewählten Punkte der nächstgelegene Punkt der aktuellen Trajektorie gefunden.\\
 Bei dieser Methode muss also der Zeitpunkt des Manövers nicht im Voraus bekannt sein, jedoch besteht die Möglichkeit, dass ein korrekter Orbit nicht erkannt wird, wenn die ausgewählten Punkte des gewünschten Orbits gerade zwischen denen des berechneten Orbits liegen. Solange die Zeitschritte klein genug sind, wird dann aber der Fehler immernoch sehr klein. Es wurde deshalb \textit{bei jedem Sub-Step}, also pro tausendstel Tag, der Abstand verglichen.
 
 
@@ -81,7 +81,7 @@ Bei dieser Methode muss also der Zeitpunkt des Manövers nicht im Voraus bekannt
 Die Shooting-Methode besteht nun darin, die Fehlerfunktion für einen gegebenen Orbit auszuwerten, und ausgehend davon den Orbit in irgendeiner Weise anzupassen, um schließlich die Nullstelle der Fehlerfunktion zu finden.
 Als Optimierungsparameter wurde die Anfangsgeschwindigkeit gewählt, da diese nur 3 Dimensionen hat und somit leichter zu optimieren ist, als z.B. der Transferorbit.
 Als initialer Wert wurde die echte gemessene Geschwindigkeit verwendet. Wichtig war vor allem, eine Anfangsgeschwindigkeit zu wählen, für welche der Satellit möglichst nahe am Jupiter vorbeifliegt, um die Laufzeit des Suchalgorithmus zu verringern. \\
-Die Daten liegen aber in Form von Kooridinaten in einem sphärischen heliozentrischen Koordinatensystem vor und haben eine Auflösung von $0.01\text{°}$.
+Die historischen Daten liegen aber in Form von Kooridinaten in einem sphärischen heliozentrischen Koordinatensystem vor und haben eine Auflösung von $0.01\text{°}$.
 Daraus lässt sich eine Unsicherheit der Position von $4\;\text{AU}\cdot\sin 0.01\text{°}\approx 7\cdot 10^{-4}\;\text{AU}$ und daraus eine Unsicherheit der Geschwindigkeit von $\sqrt{2}\cdot 7\cdot 10^{-4} \approx 10^{-3}\;\text{AU/day}$ abschätzen.
 Solche Unsicherheit ist viel zu groß für die nötige Genauigkeit von $10^{-6}$ bis $10^{-8}\;\text{AU/day}$, denn so viele Stellen muss der Suchalgorithmus optimieren, um die Nullstelle der Fehlerfunktion möglichst genau zu finden. Eine sehr kleine Änderung der Startgeschwindigkeit kann bereits zu einem völlig anderen Orbit führen. Dies dämpft die Erwartungen an die Ergebnisse.\\
 Zur Nullstellensuche wurden verschiedene Verfahren ausprobiert.
@@ -91,11 +91,21 @@ Zur Nullstellensuche wurden verschiedene Verfahren ausprobiert.
 Die Nullstelle einer stetig differenzierbaren Funktion lässt sich mithilfe des Newton-Verfahrens finden. Dabei wird die Funktion lokal linear durch ihre Ableitung angenähert. Ist die Determinante der Ableitung ungleich Null, so lässt sich das entsprechende Gleichungssystem für jedes gewünschte Ergebnis eindeutig lösen. Die Nullstelle der Taylor-Entwicklung bis zur ersten Ordnung an einem beliebigen Startpunkt wird auf diese Weise bestimmt, und die Lösung wird als neuer Startwert für die nächste Iteration desselben Vorgehens verwendet. \\
 Das Newton-Verfahren konvergiert unter bestimmten Bedingungen (die unsere Fehlerfunktionen erfüllen) lokal quadratisch gegen eine Nullstelle der untersuchten Funktion (ohne Beweis).
 
-\subsection{Newton-Hesse-Verfahren}
+\subsection{Newton-Verfahren der Optimierung}
 
+Um das Newton-Verfahren anwenden zu können, ist es also notwendig, dass die Fehlerfunktion genau so viele Ausgabewerte besitzt, wie es anzupassende Parameter gibt. Deshalb sind die Beschreibungen der Fehlerfunktionen immer Komponentenweise zu verstehen.\\
+In der Optimierung gibt es ein gebäuchliches Verfahren, um \textit{lokale Extremstellen} einer Fehlerfunktion mit eindimensionalem Output zu finden. Dazu wird zunächst der Gradient berechnet, und darauf dann das Newton-Verfahren angewendet. Man rechnet also zunächst die Hesse-Matrix aus, und versucht dann wie im vorigen Abschnitt das Gleichungssystem zu lösen, um um sich iterativ einer Nullstelle zu nähern. \\
+Wir haben im Rahmen dieses Projekts auch dieses Verfahren ausprobiert, indem es auf die quadratische Summe der Komponenten einer unserer Fehlerfunktionen angewendet wurde. Dann ist nämlich die Nullstelle der vorherigen Fehlerfunktion ein globales, und somit auch ein lokales Minimum der resultierenden Funktion. \\
+Ein Problem dieses Verfahrens ist die lange Laufzeit, denn das numerische Berechnen der Hesse-Matrix läuft in quadratischer Zeit, im Gegensatz zur einfachen Ableitung, bei der der Aufwand nur linear ansteigt. Und da der Einfluss der Startparameter auf den End-Orbit des Satelliten untersucht wurde, musste hier für jeden Optimierungsschritt viel gerechnet werden, weshalb das Programm sehr lange lief, auch unter Verwendung der OMP-Library.
 
 
 \subsection{Gradienten-Verfahren}
+
+Ebenfalls zum finden lokaler Minima solcher Funktionen verwendet man das Gradienten-Verfahren. Dabei wird ebenfalls iterativ vorgegangen, jedoch bestehen die Iterationsschritte darin, dem Gradienten ein Stück weit zu folgen. Hier muss allerdings nur einmal abgeleitet werden, was die Rechenzeit wieder erträglich macht.
+
+\vspace{1.5cm}
+
+Es wurden verschiedene Verfahren verwendet, weil manchmal das eine, manchmal das andere Probleme mit der Konvergenz (bei gleichen Anfangsbedingungen) lieferte.
 
 \section{Diskussion der Ergebnisse und Probleme}
 
