@@ -62,8 +62,18 @@ Der Ort allein als Vergleichswert reichte nicht aus, da das Programm sonst eine 
 
 Eine andere Methode ist der Vergleich der \textit{Ort}skoordinaten nach dem Swing-By \textit{zu mehreren Zeitpunkten}, dafür aber \textit{ohne Vergleich der Geschwindigkeiten}. Der Zielorbit wird nun also durch eine Reihe an zu erreichenden Wegpunkten definiert, die zu bestimmter Zeit zu erreichen sind.
 
-\subsection{Vergleich von Zielpunkten bei nächster Zeit}
 \subsection{Integral des Ort-Fehler-Quadrates}
+
+
+
+
+\subsection{Vergleich von Zielpunkten bei nächster Zeit}
+
+Um die Tatsache, dass in der Realität bei der Planung eines Swing-By-Manövers wahrscheinlich keine passenden Daten vorlägen, nicht völlig außer Acht zu lassen, wurden bei der dritten Fehlerfunktion einige Punkte auf dem Wunsch-Orbit ausgewählt - in unserem Fall genau solche, die in den historischen Daten vorlagen, aber es hätten beliebige Punkte sein können. Und dann wurde beim Berechnen der Trajektorie bei jedem Zeitschritt der aktuelle Abstand zu jedem der ausgewählten Punkte gemessen. Der Wert wurde mit einem gespeicherten Wert verglichen, und dieser überschrieben, falls der aktuelle Wert kleiner war. So wurde zu jedem der ausgewählten Punkte der nächstgelegene Punkt der aktuellen Trajektorie gefunden.\\
+Bei dieser Methode muss also der Zeitpunkt des Manövers nicht im Voraus bekannt sein, jedoch besteht die Möglichkeit, dass ein korrekter Orbit nicht erkannt wird, wenn die ausgewählten Punkte des gewünschten Orbits gerade zwischen denen des berechneten Orbits liegen. Solange die Zeitschritte klein genug sind, wird dann aber der Fehler immernoch sehr klein. Es wurde deshalb \textit{bei jedem Sub-Step}, also pro tausendstel Tag, der Abstand verglichen.
+
+
+
 
 
 
