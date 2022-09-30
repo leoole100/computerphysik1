@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief 
+ * @brief Runs the newton algorithm on the hesse Matrix of the 1D error function
  * @version 0.1
  * @date 2022-09-20
  * 
