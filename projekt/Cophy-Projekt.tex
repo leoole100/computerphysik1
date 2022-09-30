@@ -97,6 +97,10 @@ Das Newton-Verfahren konvergiert unter bestimmten Bedingungen (die unsere Fehler
 
 \subsection{Gradienten-Verfahren}
 
+\section{Diskussion der Ergebnisse und Probleme}
+
+Bei den Berechnungen der Trajektorie konnten mit keiner der benutzen Methoden eine exakte Reproduktion der historischen Daten erreicht werden. Es gibt mehrere mögliche Fehlerquellen, die die Genauigkeit der Berechnungen einschränken. Eines der Probleme, welches alle bei diesem Projekt implementierten numerischen Optimierungsverfahren haben ist, dass diese nur lokal konvergent sind. Das entscheidende  Problem der lokalen Konvergenz kann dabei mittels der bei dem Projekt implementierten \glqq Grid-Search-Methode\grqq\, gezeigt werden. Bei der \glqq Grid-Search-Methode\grqq\, werden die Werte der verwendeten Fehlerfunktionen für ein feines Gitter von Anfangsgeschwindigkeiten berechnet. Das Gitter von Anfangsgeschwindigkeiten umfasst dabei einen gewissen Geschwindigkeitsbereich welcher sich um die gesuchte Anfagsgeschwindigkeit erstreckt. Dabei hat sich gezeigt, dass die untersuchten Fehlerfunktionen mehrere lokale Minima im Bereich der gesuchten Lösung besitzen, welche nur sehr geringe Abstände zueinander haben. Das hat zur Folge, dass die lokal konvergenten Optimierungsverfahren, nicht immer gegen die gesuchte Lösung konvergieren. Besonders beim Newton-Verfahren zur Suche von Minima (in Kapitel 4.2 beschrieben) hat sich gezeigt, dass dieses aufgrund der vielen lokalen Minima, für diese Art von Problemstellung eher ungeeingnet ist.
+
 \section{Fazit}
 
 
