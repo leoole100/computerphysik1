@@ -39,6 +39,7 @@ Für jeden dieser Schritte wurde ein Leap-Frog-Schritt durchgeführt, um die Pos
 	\centering
 	\includegraphics{img/energy.pdf}
 	\caption{Energie und Geschwindigkeit während des Swing-by Manövers}
+	\label{fig:energie}
 \end{figure}
 
 
@@ -46,6 +47,7 @@ Für jeden dieser Schritte wurde ein Leap-Frog-Schritt durchgeführt, um die Pos
 \begin{figure}[h!]
 	\centering
 	\includegraphics{img/gridSearch.pdf}
+	\label{fig:gridSearch}
 \end{figure}
 
 Damit ein gewünschter Orbit erreicht werden kann, muss zunächst definiert werden, wie dieser aussehen soll. Der Starpunkt des Satelliten liegt natürlich auf der Erde. Den genauen Endzustand kennen wir im Fall der historischen Raumfahrtmission, ansonsten bleibt nur übrig, den gewünschten Zielorbit auf andere Weise zu definieren. In beiden Fällen handelt es sich um ein Randwertproblem, welches sich mithilfe der Shooting-Methode lösen lässt.\\
@@ -111,14 +113,38 @@ Es wurden verschiedene Verfahren verwendet, weil manchmal das eine, manchmal das
 
 \subsection{Was funktioniert hat}
 
-Alle Optimierungsverfahren und alle hier beschriebenen Fehlerfunktionen lieferten plausible Ergebnisse, die gefundenen Startbedingungen führten in der Simulation tatsächlich zu Orbits, für welche der Satellit einen Swing-By durchführte. Weil eine kleine Positionsänderung \textit{zur Zeit des Swing-By}, also nach fast 500 Simulationszeit, zu einem komplett anderen End-Orbit führt, und nach letzterem optimiert wurde, sind alle gefundenen Orbits visuell vor dem Manöver nicht zu unterscheiden. In Abbildung \ref{fig:trajectory} ist nur ein simulierter Orbit dargestellt, es könnten aber auch alle sein. Sehen würde man es nicht, außer, dass die Trajektorien am Ende langsam leicht auseinanderlaufen, aber auch hier kaum.
+Alle Optimierungsverfahren und alle hier beschriebenen Fehlerfunktionen lieferten plausible Ergebnisse, die gefundenen Startbedingungen führten in der Simulation tatsächlich zu Orbits, für welche der Satellit einen Swing-By durchführte. Weil eine kleine Positionsänderung \textit{zur Zeit des Swing-By}, also nach fast 500 Simulationszeit, zu einem komplett anderen End-Orbit führt, und nach letzterem optimiert wurde, sind alle gefundenen Orbits visuell vor dem Manöver nicht zu unterscheiden. In Abbildung \ref{fig:trajectory} ist nur ein simulierter Orbit dargestellt, es könnten aber auch alle sein. Sehen würde man es fast nicht, außer, dass die Trajektorien am Ende leicht auseinanderlaufen, aber auch hier kaum. Im Grunde funktionieren also die Simulation und auch die Optimierungsverfahren. Wie in Abbildung \ref{fig:energie} ist schön zu sehen, wie sich beim Swing-By die Gesamtenergie von der des Startorbits zu der des Zielorbits ändert, und ansonsten zeitlich konstant bleibt.
 
 
 \subsection{Was nicht funktioniert hat}
 
-Bei den Berechnungen der Trajektorie konnten mit keiner der benutzen Methoden eine exakte Reproduktion der historischen Daten erreicht werden. Es gibt mehrere mögliche Fehlerquellen, die die Genauigkeit der Berechnungen einschränken. Eines der Probleme, welches alle bei diesem Projekt implementierten numerischen Optimierungsverfahren haben ist, dass diese nur lokal konvergent sind. Das entscheidende  Problem der lokalen Konvergenz kann dabei mittels der bei dem Projekt implementierten \glqq Grid-Search-Methode\grqq\, gezeigt werden. Bei der \glqq Grid-Search-Methode\grqq\, werden die Werte der verwendeten Fehlerfunktionen für ein feines Gitter von Anfangsgeschwindigkeiten berechnet. Das Gitter von Anfangsgeschwindigkeiten umfasst dabei einen gewissen Geschwindigkeitsbereich welcher sich um die gesuchte Anfagsgeschwindigkeit erstreckt. Dabei hat sich gezeigt, dass die untersuchten Fehlerfunktionen mehrere lokale Minima im Bereich der gesuchten Lösung besitzen, welche nur sehr geringe Abstände zueinander haben. Das hat zur Folge, dass die lokal konvergenten Optimierungsverfahren, nicht immer gegen die gesuchte Lösung konvergieren. Besonders beim Newton-Verfahren zur Suche von Minima (in Kapitel 4.2 beschrieben) hat sich gezeigt, dass dieses aufgrund der vielen lokalen Minima, für diese Art von Problemstellung eher ungeeingnet ist.
+Bei den Berechnungen der Trajektorie konnten allerdings mit keiner der benutzen Methoden eine exakte Reproduktion der historischen Daten erreicht werden. Es gibt mehrere mögliche Fehlerquellen, die die Genauigkeit der Berechnungen einschränken. Eines der Probleme, welches alle bei diesem Projekt implementierten numerischen Optimierungsverfahren haben ist, dass diese nur lokal konvergent sind. Das entscheidende  Problem der lokalen Konvergenz kann dabei mittels der bei dem Projekt implementierten \glqq Grid-Search-Methode\grqq\, gezeigt werden. Bei der \glqq Grid-Search-Methode\grqq\, werden die Werte der verwendeten Fehlerfunktionen für ein feines Gitter von Anfangsgeschwindigkeiten berechnet. Das Gitter von Anfangsgeschwindigkeiten umfasst dabei einen gewissen Geschwindigkeitsbereich welcher sich um die gesuchte Anfagsgeschwindigkeit erstreckt. Dabei hat sich gezeigt, dass die untersuchten Fehlerfunktionen mehrere lokale Minima im Bereich der gesuchten Lösung besitzen, welche nur sehr geringe Abstände zueinander haben, nämlich teilweise in der Größenordnung $10^{-8}\;\text{AU/day}$ (vgl. Abbildung \ref{fig:gridSearch}). Das hat zur Folge, dass die lokal konvergenten Optimierungsverfahren nicht immer gegen die gesuchte Lösung konvergieren. Besonders beim Newton-Verfahren zur Suche von Minima (in Kapitel 4.2 beschrieben) hat sich gezeigt, dass dieses aufgrund der vielen lokalen Minima für diese Art von Problemstellung eher ungeeingnet ist.\\
+Außerdem stellten wir nach einiger Zeit fest, dass die historischen Daten in unserer Simulation keinen möglichen Orbit darstellen. Wählt man als Anfangsgeschwindigkeit diejenige, die sich aus den echten Messwerten errechnen lässt, dann fliegt der Satellit so weit am Jupiter vorbei, dass gar kein Swing-By stattfindet. Der Vergleich eines gefundenen Orbits mit den historischen Daten zeigt, dass während des Flugs Kräfte gewirkt haben müssen, die wir nicht nachvollziehen können. Leider liegen uns keine Informationen dazu vor, ob, und wenn ja wann Triebwerke am Satelliten verwendet wurden, um den Orbit zu korrigieren. Diejenigen Orbits, die in unserer Simulation auf den gewünschten Zielorbit gelangen, erreichen den Jupiter immer etwa vier Tage zu spät (verglichen mit historischen Daten).
+
+\subsection{Was man hätte besser machen können}
+
+Von Anfang an wurde versucht, den historischen Orbit zu treffen, obwohl dieser keinen in unserer Simulation gültigen Orbit darstellte. Es ging viel Zeit dadurch verloren, die Probleme in den Fehlerfunktionen zu suchen, die dazu gedacht waren, den historischen Orbit zu finden, der ja gar nicht existierte (in unserem erfundenen Universum zumindest). Das alles hätte nicht passieren können, wenn man sich lediglich am Ziel-Orbit, und nie direkt an den Datenpunkten Orientiert hätte. Vor allem ist damit das Zeitproblem gemeint: Drei unserer vier Fehlerfunktionen verglichen Ort und eventuell Geschwindigkeit zu festen Zeitpunkten. Das Resultat waren Orbits, die mehrere Tage länger zum Jupiter brauchten, und dort dann etwas länger verweilten, um schließlich mit den (mit unserer Simulation nicht vereinbaren) historischen Daten \textit{zum richtigen Zeitpunkt} zusammenzutreffen. \\
+Wir überlegten zwischenzeitlich, eine Ellipse auf die historischen Daten zu fitten, um eine Fehlerfunktion darüber zu definieren, das schien aber zu kompliziert. Schlauer gewesen wäre vielleicht eine Definition der Fehlerfunktion über die gewünschte Gesamtenergie, den gewünschten Drehimpulsbetrag bezüglich der Sonne, und den Abstand zur Ebene, in welcher der Orbit liegen sollte. Das hätte vielleicht bessere Ergebnisse geliefert, aber lässt sich im zeitlichen Rahmen nicht mehr überprüfen. 
+
+
 
 \section{Fazit}
+
+Es ist uns geglückt, anhand eines Optimierungsalgorithmus einen (sogar mehrere) Orbit(s) zu finden, die den gewünschten Swing-By ausführen. Es ist uns dadurch auch \textit{fast} gelungen, den historischen Orbit zu rekonstruieren. Anhand der Ergebnisse lässt sich nachvollziehen, wie groß die zusätzlichen Kräfte auf den echten Satelliten gewesen sein müssen, die wir nicht berücksichtigt haben. \\
+Andererseits wurde die ganze Zeit über von Daten ausgegangen, die gar nicht in auch nur annähernd hinreichender Auflösung vorlagen. Dadurch ist natürlich das ganze Vorgehen doch etwas fragwürdig. Es wurden im Rahmen unseres Projekts auch nur drei Parameter, nämlich die Komponenten der Abschussgeschwindigkeit optimiert. Startposition und Startzeitpunkt wurden als exakt übereinstimmend mit dem vorliegenden, historischen Datensatz angenommen, und natürlich können auch hier Abweichungen aufgetreten sein. Vielleicht hätte all das letztendlich dazu geführt, dass man doch noch einen übereinstimmenden Orbit gefunden hätte. In dieser Hinsicht ist das Projekt nicht geglückt, daran wurde am Anfang nicht gedacht, und die Probleme traten dann erst später auf.\\
+Würde man wie hier einen passenden Orbit für ein Swing-By-Manöver suchen, ohne Daten vorliegen zu haben, würde unser Programm mit der zuletzt aufgeführten, zeitunabhängigen Fehlerfunktion zwar sinnvolle Ergebnisse liefern, aber besser wäre es dafür, den Orbit am Ende der Simulationszeit auf andere Weise zu bewerten.\\
+Das Projekt war also ein teilweiser Erfolg.
+
+
+\section{Code}
+
+Der Quellcode wird online zur Verfügung gestellt, da es nicht sinnvoll erscheint, etliche Seiten C-Code an dieses Dokument anzuhängen. Dabei verwenden wir die Plattform GitHub, über die sich nachvollziehen lässt, wann die Dateien zuletzt modifiziert wurden. Dadurch kann gewährleistet werden, dass der Code nicht nach der Abgabe noch unbemerkt geändert werden kann. Es lässt sich sogar ein Netzwerkgraph betrachten, welcher die Timeline der Dateiänderungen darstellt, wenn man sich das antun möchte.
+
+\vspace{1.5cm}
+
+\noindent \textit{Disclaimer:} Im Code ist oft angeführt, wer den jeweiligen Codeblock geschrieben hat. Das diente beim bearbeiten des Projekts der Orientierung und verbesserte die Effizienz des Schuldigen-findens. Jedoch wurde ich (der Autor des größeren Teils dieses Berichts) nun darauf hingewiesen, dass ich dabei nicht gut wegkomme, da mein Name kaum auftaucht. Das liegt an der Arbeitsteilung in der Arbeitsgruppe: Ein Gruppenmitglied kümmerte sich vorwiegend um die Programmierung der Simulation, eines um die Optimierungsverfahren, und das dritte vorwiegend mit dem Verfassen des Berichts. Das fertige Programm wurde mit verschiedenen Fehlerfunktionen getestet, welche kameradschaftlich unter Verwendung \textit{aller} in der Gruppe vorhandenen Personen entwickelt wurden. Es wurde also von allen Mitgliedern Maßgebliche Arbeit am Projekt verrichtet.
+
+
 
 
 \end{document}
