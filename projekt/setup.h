@@ -33,7 +33,7 @@ const double r_start[3]={0.9018647801517535, 0.4249622724991888, 0.0074823307969
 //double v_start[3] ={-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
 //double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; //manually found value for swing by
 //double v_start[3] = {-0.009457376603971, 0.021741396850579, 0.000814226449307}; // best currently known guess
-double v_start[3] = {-0.009457463159981, 0.021741206134935, 0.000814433271683};
+double v_start[3] = {-0.00944, 0.021735, 0.000818};
 
 //boundary conditions for the error function
 /*#define NUM_ENDS 4
