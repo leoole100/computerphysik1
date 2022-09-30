@@ -16,21 +16,18 @@
 #include "setup.h"
 
 
+#define VERLET false // false for leapfrog
+
+
 // global variables in the heap  ///////////////////////////////////////////////////////////////////////////
 //deviation of the numerical solution from the boundary conditions 
 double err = 0;
-//Jacobian matrix of the errorfunction 
-double Jacobian[3][3];
-//counter of the newton steps
-int newtoniterationnumber = 1;
 double errvec[3]; // input of jacobian and input of newtonstep
 
 // structs  ///////////////////////////////////////////////////////////////////////////////////////////////
 __uint8_t getPlanetNumber();
 void openPlanetFiles(__uint8_t planet_num, FILE ** planet_files);
 double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3]);
-void makeJacobian();
-double newtonstep(int newtoniterationnumber);
 double trajectory(double (*v_p)[3],  bool save);
 
 // functions  //////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,16 +152,23 @@ double trajectory(double (*v_p)[3],  bool save)
 			}
 		}
 
-		double r[3], v[3], a[3], tmp[3];
+		double r[3], r_old[3], v[3], a[3], tmp[3];
 
 		//initialize boundaryvalues at TMIN
 		r[0] = r_start[0];
 		r[1] = r_start[1];
 		r[2] = r_start[2];
-		v[0] = (*v_p)[0];
-		v[1] = (*v_p)[1];
-		v[2] = (*v_p)[2];
-		
+		if(VERLET){
+			// for verlet:	
+			r_old[0] = r_start[0] - (*v_p)[0]/SUB_STEPS;
+			r_old[1] = r_start[1] - (*v_p)[1]/SUB_STEPS;
+			r_old[2] = r_start[2] - (*v_p)[2]/SUB_STEPS;
+		} else {
+			// for leapfrog
+			v[0] = (*v_p)[0];
+			v[1] = (*v_p)[1];
+			v[2] = (*v_p)[2];
+		}
 
 		// for keeping track of the right boundary condition
 		double end_min[NUM_ENDS] = {100,100,100};
@@ -228,14 +232,28 @@ double trajectory(double (*v_p)[3],  bool save)
 				// print force
 				//printf("%lf %lf %lf\n", a[0], a[1], a[2]);
 
-				// Leap Frog step
-				v[0] += a[0] / SUB_STEPS;
-				v[1] += a[1] / SUB_STEPS;
-				v[2] += a[2] / SUB_STEPS;
-				r[0] += v[0] / SUB_STEPS;
-				r[1] += v[1] / SUB_STEPS;
-				r[2] += v[2] / SUB_STEPS;
-				
+				if(VERLET){
+					// Verlet step
+					tmp[0] = 2.0*r[0]+ pow(SUB_STEPS,-2)*a[0]-v[0];
+					tmp[1] = 2.0*r[1]+ pow(SUB_STEPS,-2)*a[1]-v[1];
+					tmp[2] = 2.0*r[2]+ pow(SUB_STEPS,-2)*a[2]-v[2];
+					v[0] = r[0];
+					v[1] = r[1];
+					v[2] = r[2];
+					r[0] = tmp[0];
+					r[1] = tmp[1];
+					r[2] = tmp[2];
+				} else {
+					// Leap Frog step
+					v[0] += a[0] / SUB_STEPS;
+					v[1] += a[1] / SUB_STEPS;
+					v[2] += a[2] / SUB_STEPS;
+					r[0] += v[0] / SUB_STEPS;
+					r[1] += v[1] / SUB_STEPS;
+					r[2] += v[2] / SUB_STEPS;
+				}
+
+
 				/*//Ab hier Randbedingungen unabhängig von Tagen
 				for(int l = 0 ; l < NUM_ENDS ; l++)
 				{
@@ -256,7 +274,12 @@ double trajectory(double (*v_p)[3],  bool save)
 			}
 
 			// calculate energy
-			double energy = 0.5*(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+			double energy;
+			if(VERLET){
+				energy = 0.5*(pow((r[0]-v[0])*SUB_STEPS,2)+pow((r[1]-v[1])*SUB_STEPS,2)+pow((r[2]-v[2])*SUB_STEPS,2)); // verlet
+			} else {
+				energy = 0.5*(pow(v[0],2)+pow(v[1],2)+pow(v[2],2)); // for newton
+			}
 			for (size_t i = 0; i < planet_num; i++){
 				// calculate distance
 				tmp[0] = planet_coords_next[i][0] - r[0];
@@ -381,181 +404,4 @@ double errfunction(double (*r)[NUM_ENDS][3], double (*v)[NUM_ENDS][3])
 	double abserr = powf(errvec[0],2)+powf(errvec[1],2)+powf(errvec[2],2);
 	//printf("%lf\n",abserr);
 	return abserr;
-}
-
-/**
- * @brief 
- * 
- * @author Moritz Schroer
- */
-void calcJacobian()
-{	
-	/*
-    vec(v_n)=v_start^(n)
-	Computes Jacobian Matrix Derr(vec(v_n)) by calculating the partial dericatives with difference quotient:
-
-	d err_i/d x = (errvec(v_start[0] + h * e_x , v_start[1] , v_start[2]) - errvec(v_start[0] , v_start[1] , v_start[2])) / h
-	d err_i/d y = (errvec(v_start[0] , v_start[1] + h *e_y , v_start[2]) - errvec(v_start[0] , v_start[1] , v_start[2])) / h
-	d err_i/d z = (errvec(v_start[0] , v_start[1] , v_start[2] + h *e_z) - errvec(v_start[0] , v_start[1] , v_start[2])) / h
-
-	and then resets errvec = err(v_start[0] , v_start[1] , v_start[2])
-
-	inputs:
-		None
-
-	outputs :
-		None
-
-	————————————————————————————————————————————————
-	*/
-
-	for(int j = 0 ; j < 3 ; j++ )
-	{
-		
-		v_start[j]+=h;
-		err = trajectory(&v_start, false);
-
-		for(int i = 0 ;  i < 3 ; i++)
-		{
-			Jacobian[i][j]=errvec[i];
-		}
-		v_start[j]-=h;
-
-		err = trajectory(&v_start, false);
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			Jacobian[i][j]-=errvec[i];
-			Jacobian[i][j]/=h;
-		}
-		
-	}
-}
-
-/**
- * @brief 
- * 
- * @author Moritz Schroer
- */
-double newtonstep(int ni)
-{
-	/*
-	v_start^(n) := (v_start[0] , v_start[1] , v_start[2])
-
-	Calculates Newtonstep v_start^(n+1) = v_start^(n) - (Derr(v_start^(n)))^-1 * err(v_start^(n))	
-
-	Therefore the following System of equations is solved with Jacobi iteration (deltav_n := (delta v_x , delta v_y , delta v_z)):
-
-	Derr(v_start^(n)) * deltav_n    =     -err(v_start^(n)) 
-	
-	then set:
-
-	v_start^(n+1) = v_start^(n) + deltav_n
-
-	inputs:
-		None
-	outputs:
-		None
-
-	—————————————————————————————————————————————————-
-	*/
-
-
-    /* numerical solution of equation system (doesn't work)
-    -----------------------------------------------------------------------------------------------------------
-    //calculate Jacobian Matrix Derr of the errorfunction
-	calcJacobian();
-
-	//delta_s vector to solve the linear system of equation with Jacobi iteration method
-	double deltav_n[3] = {-0. , -0.0 , -0.0};
-	double deltav_np[3] = {0 , 0 , 0}; 
-	//sles := Derr*deltas, if | sles- |^2 < 1e-7 break; because linear equation system is solved.
-	
-	double abserrles = 100;
-	//initial guess of the solution of the linear system of equations
-	do{	
-		
-			for(int j = 0 ; j < 3 ; j++)
-			{
-				printf("errvec[%d] = %lf\n", j, errvec[j]);
-			
-		}
-
-		//do Jacobi step
-		deltav_np[0] =  (-errvec[0]-Jacobian[0][1]*deltav_n[1]-Jacobian[0][2]*deltav_n[2])/Jacobian[0][0]; 
-		deltav_np[1] =  (-errvec[1]-Jacobian[1][0]*deltav_n[0]-Jacobian[1][2]*deltav_n[2])/Jacobian[1][1]; 
-		deltav_np[2] =  (-errvec[2]-Jacobian[2][0]*deltav_n[0]-Jacobian[2][1]*deltav_n[1])/Jacobian[2][2]; 
-		deltav_n[0] = deltav_np[0];
-		deltav_n[1] = deltav_np[1];
-		deltav_n[2] = deltav_np[2];
-		
-
-        double sles[3] = {0.0 , 0.0 , 0.0};
-		//calculate Derr(v_start^(n))*(s_x,s_y,s_z)
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			for(int j = 0 ; j < 3 ; j++)
-			{
-				sles[i]+=(Jacobian[i][j]*deltav_n[j]);
-			}
-		}
-		abserrles = (sles[0]+errvec[0])*(sles[0]+errvec[0])+(sles[1]+errvec[1])*(sles[1]+errvec[1])+(sles[2]+errvec[2])*(sles[2]+errvec[2]);
-		//check if abserrless is finte else exit programm and display error message
-		if(isinf(abserrles) || isnan(abserrles))
-		{
-			printf("error couldnt perform Newtonstep abserror exceeds limits %lf\n",abserrles);
-			exit(0);
-		}
-	}while(abserrles > powf(10,-8));
-	----------------------------------------------------------------------------------------------------------------------------*/
-
-        //calculate Jacobian Matrix Derr of the errorfunction
-	calcJacobian();
-
-		
-  	double solution[3] = {0 , 0 , 0};
-
-	//Gauss Algorithmus für Dreiecksform
-	for(int i = 0 ; i < 3 ; i++)
-	{   
-		double fac1 = Jacobian[i][i];
-		if(Jacobian[i][i] != 0)
-		{
-			for(int j = 0 ; j < 3 ; j++)
-			{
-				Jacobian[i][j]/=fac1;
-			}
-			errvec[i]/=fac1;
-		}
-		for(int j = i+1 ; j < 3 ; j++)
-		{
-			double fac2 = Jacobian[j][i];
-			errvec[j]-=errvec[i]*fac2;
-			for(int k = 0 ; k < 3 ; k++)
-			{   
-				Jacobian[j][k]-=Jacobian[i][k]*fac2;
-			}
-		}
-	}
-
-	//solve System 
-	for(int i = 2 ; i > 0 ; i--)
-	{
-		for(int j = 0 ; j < i ; j++)
-		{
-			double fac = Jacobian[j][i];                   
-			Jacobian[j][i]=0;
-			errvec[j]-=errvec[i]*fac;
-		}
-	}
-
-	double gain = .1;
-
-	v_start[0]-=gain*errvec[0];
-	v_start[1]-=gain*errvec[1];
-	v_start[2]-=gain*errvec[2];
-
-	//solve boundary value problem with new initial velocity
-	double abserror = trajectory(&v_start, false);
-	printf("%4d. iteration: v_start = {%.10f, %.10f, %.10f}, err = %e\n", ni,v_start[0],v_start[1],v_start[2], abserror);
-    return(abserror);
 }

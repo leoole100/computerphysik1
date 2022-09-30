@@ -12,7 +12,7 @@
 */
 #define PLANET_PATH "data/planets/"
 //#define TMAX 519 // in days // historic travel time
-#define TMAX 900 // for plots
+#define TMAX 2800 // for plots
 #define SUB_STEPS 1e3
 #define h 1e-12 //constant needed for calculation of difference qoutioent f'(x)=(f(x+h)-f(x))/h
 #define G  1.488e-34 // in AU^3 / kg day^2
@@ -33,7 +33,7 @@ const double r_start[3]={0.9018647801517535, 0.4249622724991888, 0.0074823307969
 //double v_start[3] ={-0.00937424, 0.0215741, 0.000878397}; // historic data at day 10
 //double v_start[3] = {-0.0094588, 0.0217687, 0.000799341}; //manually found value for swing by
 //double v_start[3] = {-0.009457376603971, 0.021741396850579, 0.000814226449307}; // best currently known guess
-double v_start[3] = {-0.00945743, 0.0217413, 0.00081447};
+double v_start[3] = {-0.00944, 0.021735, 0.000818};
 
 //boundary conditions for the error function
 /*#define NUM_ENDS 4
