@@ -48,6 +48,7 @@ Für jeden dieser Schritte wurde ein Leap-Frog-Schritt durchgeführt, um die Pos
 	\centering
 	\includegraphics{img/gridSearch.pdf}
 	\label{fig:gridSearch}
+	\caption{Wert der Integral-des-Ort-Fehler-Quadrates-Fehlerfunktion für verschiedene Start-Geschwindigkeitswerte}
 \end{figure}
 
 Damit ein gewünschter Orbit erreicht werden kann, muss zunächst definiert werden, wie dieser aussehen soll. Der Starpunkt des Satelliten liegt natürlich auf der Erde. Den genauen Endzustand kennen wir im Fall der historischen Raumfahrtmission, ansonsten bleibt nur übrig, den gewünschten Zielorbit auf andere Weise zu definieren. In beiden Fällen handelt es sich um ein Randwertproblem, welches sich mithilfe der Shooting-Methode lösen lässt.\\
@@ -96,9 +97,9 @@ Das Newton-Verfahren konvergiert unter bestimmten Bedingungen (die unsere Fehler
 \subsection{Newton-Verfahren der Optimierung}
 
 Um das Newton-Verfahren anwenden zu können, ist es also notwendig, dass die Fehlerfunktion genau so viele Ausgabewerte besitzt, wie es anzupassende Parameter gibt. Deshalb sind die Beschreibungen der Fehlerfunktionen immer Komponentenweise zu verstehen.\\
-In der Optimierung gibt es ein gebäuchliches Verfahren, um \textit{lokale Extremstellen} einer Fehlerfunktion mit eindimensionalem Output zu finden. Dazu wird zunächst der Gradient berechnet, und darauf dann das Newton-Verfahren angewendet. Man rechnet also zunächst die Hesse-Matrix aus, und versucht dann wie im vorigen Abschnitt das Gleichungssystem zu lösen, um um sich iterativ einer Nullstelle zu nähern. \\
+In der Optimierung gibt es ein gebräuchliches Verfahren, um \textit{lokale Extremstellen} einer Fehlerfunktion mit eindimensionalem Output zu finden. Dazu wird zunächst der Gradient berechnet, und darauf dann das Newton-Verfahren angewendet. Man rechnet also zunächst die Hesse-Matrix aus, und versucht dann wie im vorigen Abschnitt das Gleichungssystem zu lösen, um um sich iterativ einer Nullstelle zu nähern. \\
 Wir haben im Rahmen dieses Projekts auch dieses Verfahren ausprobiert, indem es auf die quadratische Summe der Komponenten einer unserer Fehlerfunktionen angewendet wurde. Dann ist nämlich die Nullstelle der vorherigen Fehlerfunktion ein globales, und somit auch ein lokales Minimum der resultierenden Funktion. \\
-Ein Problem dieses Verfahrens ist die lange Laufzeit, denn das numerische Berechnen der Hesse-Matrix läuft in quadratischer Zeit, im Gegensatz zur einfachen Ableitung, bei der der Aufwand nur linear ansteigt. Und da der Einfluss der Startparameter auf den End-Orbit des Satelliten untersucht wurde, musste hier für jeden Optimierungsschritt viel gerechnet werden, weshalb das Programm sehr lange lief, auch unter Verwendung der OMP-Library.
+Ein Problem dieses Verfahrens ist die lange Laufzeit, denn das numerische Berechnen der Hesse-Matrix läuft in quadratischer Zeit, im Gegensatz zur einfachen Ableitung, bei der der Aufwand nur linear ansteigt. Und da der Einfluss der Startparameter auf den End-Orbit des Satelliten untersucht wurde, musste hier für jeden Optimierungsschritt viel gerechnet werden, weshalb das Programm sehr lange lief, auch unter Verwendung der OpenMP-Library.
 
 
 \subsection{Gradienten-Verfahren}
