@@ -113,7 +113,7 @@ Es wurden verschiedene Verfahren verwendet, weil manchmal das eine, manchmal das
 
 \subsection{Was funktioniert hat}
 
-Alle Optimierungsverfahren und alle hier beschriebenen Fehlerfunktionen lieferten plausible Ergebnisse, die gefundenen Startbedingungen führten in der Simulation tatsächlich zu Orbits, für welche der Satellit einen Swing-By durchführte. Weil eine kleine Positionsänderung \textit{zur Zeit des Swing-By}, also nach fast 500 Simulationszeit, zu einem komplett anderen End-Orbit führt, und nach letzterem optimiert wurde, sind alle gefundenen Orbits visuell vor dem Manöver nicht zu unterscheiden. In Abbildung \ref{fig:trajectory} ist nur ein simulierter Orbit dargestellt, es könnten aber auch alle sein. Sehen würde man es fast nicht, außer, dass die Trajektorien am Ende leicht auseinanderlaufen, aber auch hier kaum. Im Grunde funktionieren also die Simulation und auch die Optimierungsverfahren. Wie in Abbildung \ref{fig:energie} ist schön zu sehen, wie sich beim Swing-By die Gesamtenergie von der des Startorbits zu der des Zielorbits ändert, und ansonsten zeitlich konstant bleibt.
+Alle Optimierungsverfahren und alle hier beschriebenen Fehlerfunktionen lieferten plausible Ergebnisse, die gefundenen Startbedingungen führten in der Simulation tatsächlich zu Orbits, für welche der Satellit einen Swing-By durchführte. Weil eine kleine Positionsänderung \textit{zur Zeit des Swing-By}, also nach fast 500 Simulationszeit, zu einem komplett anderen End-Orbit führt, und nach letzterem optimiert wurde, sind alle gefundenen Orbits visuell vor dem Manöver nicht zu unterscheiden. In Abbildung \ref{fig:trajectory} ist nur ein simulierter Orbit dargestellt, es könnten aber auch alle sein. Sehen würde man es fast nicht, außer, dass die Trajektorien am Ende leicht auseinanderlaufen, aber auch hier kaum. Im Grunde funktionieren also die Simulation und auch die Optimierungsverfahren. In Abbildung \ref{fig:energie} ist schön zu sehen, wie sich beim Swing-By die Gesamtenergie von der des Startorbits zu der des Zielorbits ändert, und ansonsten zeitlich konstant bleibt.
 
 
 \subsection{Was nicht funktioniert hat}
@@ -136,13 +136,15 @@ Würde man wie hier einen passenden Orbit für ein Swing-By-Manöver suchen, ohn
 Das Projekt war also ein teilweiser Erfolg.
 
 
+\appendix
+
 \section{Code}
 
-Der Quellcode wird online zur Verfügung gestellt, da es nicht sinnvoll erscheint, etliche Seiten C-Code an dieses Dokument anzuhängen. Dabei verwenden wir die Plattform GitHub, über die sich nachvollziehen lässt, wann die Dateien zuletzt modifiziert wurden. Dadurch kann gewährleistet werden, dass der Code nicht nach der Abgabe noch unbemerkt geändert werden kann. Es lässt sich sogar ein Netzwerkgraph betrachten, welcher die Timeline der Dateiänderungen darstellt, wenn man sich das antun möchte.
-
+Der Quellcode wird online zur Verfügung gestellt, da es nicht sinnvoll erscheint, etliche Seiten C-Code an dieses Dokument anzuhängen. Dabei verwenden wir die Plattform GitHub, über die sich nachvollziehen lässt, wann die Dateien zuletzt modifiziert wurden. Dadurch kann gewährleistet werden, dass der Code nicht nach der Abgabe noch unbemerkt geändert werden kann. Es lässt sich sogar ein Netzwerkgraph betrachten, welcher die Timeline der Dateiänderungen darstellt, wenn man sich das antun möchte.\\
+\url{https://github.com/leoole100/computerphysik1}
 \vspace{1.5cm}
 
-\noindent \textit{Disclaimer:} Im Code ist oft angeführt, wer den jeweiligen Codeblock geschrieben hat. Das diente beim bearbeiten des Projekts der Orientierung und verbesserte die Effizienz des Schuldigen-findens. Jedoch wurde ich (der Autor des größeren Teils dieses Berichts) nun darauf hingewiesen, dass ich dabei nicht gut wegkomme, da mein Name kaum auftaucht. Das liegt an der Arbeitsteilung in der Arbeitsgruppe: Ein Gruppenmitglied kümmerte sich vorwiegend um die Programmierung der Simulation, eines um die Optimierungsverfahren, und das dritte vorwiegend mit dem Verfassen des Berichts. Das fertige Programm wurde mit verschiedenen Fehlerfunktionen getestet, welche kameradschaftlich unter Verwendung \textit{aller} in der Gruppe vorhandenen Personen entwickelt wurden. Es wurde also von allen Mitgliedern Maßgebliche Arbeit am Projekt verrichtet.
+\noindent \textit{Disclaimer:} Im Code ist oft angeführt, wer den jeweiligen Codeblock geschrieben hat. Das diente beim bearbeiten des Projekts der Orientierung und verbesserte die Effizienz des Schuldigen-findens. Jedoch wurde ich (der Autor des größeren Teils dieses Berichts) nun darauf hingewiesen, dass ich dabei nicht gut wegkomme, da mein Name kaum auftaucht. Das liegt an der Arbeitsteilung in der Arbeitsgruppe: Ein Gruppenmitglied kümmerte sich vorwiegend um die Programmierung der Simulation, eines um die Optimierungsverfahren, und das dritte vorwiegend mit dem Verfassen des Berichts. Das fertige Programm wurde mit verschiedenen Fehlerfunktionen getestet, welche kameradschaftlich unter Verwendung \textit{aller} in der Gruppe vorhandenen Personen entwickelt wurden. Es wurde also von allen Mitgliedern maßgebliche Arbeit am Projekt verrichtet.
 
 
 
